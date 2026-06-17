@@ -1,4 +1,4 @@
-# Affinitiv Reports — Push Script
+﻿# Affinitiv Reports â€” Push Script
 # Run this after new reports are generated, or schedule it nightly.
 # Requirements: Git must be installed and configured on this machine.
 #
@@ -7,16 +7,16 @@
 #   2. Set REPO_PATH below to match
 #   3. Set REPORTS_SOURCE to wherever Claude saves your outputs
 
-# ── CONFIG ────────────────────────────────────────────────────────────────────
+# â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $REPO_PATH     = "C:\AffinitivReports"          # Local clone of your GitHub repo
-$REPORTS_SOURCE = "C:\Users\JeffreyYoung\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\outputs"
+$REPORTS_SOURCE = "C:\\Users\\JeffreyYoung\\Reports"
 $REPORTS_DEST  = "$REPO_PATH\reports"            # Subfolder inside the repo
 $EXTENSIONS    = @("*.html", "*.md", "*.xlsx", "*.xls", "*.csv", "*.pdf")
-# ──────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 Write-Host ""
 Write-Host "Affinitiv Reports Push" -ForegroundColor Cyan
-Write-Host "──────────────────────" -ForegroundColor DarkGray
+Write-Host "â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€" -ForegroundColor DarkGray
 
 # Ensure reports folder exists
 if (-not (Test-Path $REPORTS_DEST)) {
