@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RML Leads Report — Jan–Jun 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --ink: #0d1117; --ink-mid: #3a4150; --ink-light: #6b7280;
+  --rule: #e2e5ea; --bg: #f7f8fa; --surface: #ffffff;
+  --blue: #1a56db; --blue-lt: #dbeafe; --blue-dk: #1e3a8a;
+  --purple: #7c3aed; --teal: #0891b2;
+  --red: #dc2626; --red-lt: #fee2e2;
+  --green: #16a34a; --green-lt: #dcfce7;
+  --amber: #d97706; --amber-lt: #fef3c7;
+  --forecast: #f59e0b;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r: 6px; --shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+
+/* Header */
+.header{background:var(--ink);color:#fff;padding:32px 40px 28px;border-bottom:3px solid var(--blue)}
+.header-inner{max-width:1200px;margin:0 auto}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+.header h1{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.header-sub{margin-top:6px;color:#94a3b8;font-size:13px}
+.header-meta{margin-top:14px;display:flex;gap:20px;font-size:12px;color:#64748b;flex-wrap:wrap}
+
+/* Layout */
+.wrapper{max-width:1200px;margin:0 auto;padding:32px 40px 64px}
+.section-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}
+.kpi-card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi-card.forecast-card{border-color:var(--forecast);background:linear-gradient(135deg,#fffbeb 0%,#fff 60%)}
+.kpi-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:5px}
+.kpi-value{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.kpi-delta{margin-top:6px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;display:inline-block}
+.kpi-delta.down{background:var(--red-lt);color:var(--red)}
+.kpi-delta.up{background:var(--green-lt);color:var(--green)}
+.kpi-delta.flat{background:var(--amber-lt);color:var(--amber)}
+
+/* Cards */
+.chart-row{display:grid;gap:18px;margin-bottom:32px}
+.chart-row.two-col{grid-template-columns:3fr 2fr}
+.chart-row.three-col{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow)}
+.card.forecast-card{border-left:3px solid var(--forecast)}
+.card-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.card-sub{font-size:12px;color:var(--ink-light);margin-bottom:16px}
+.chart-wrap{position:relative}
+
+/* MoM Waterfall row */
+.mom-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-bottom:32px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.mom-cell{padding:18px 16px;border-right:1px solid var(--rule);position:relative}
+.mom-cell:last-child{border-right:none}
+.mom-arrow{font-size:22px;position:absolute;right:-14px;top:50%;transform:translateY(-50%);z-index:2;color:var(--ink-light)}
+.mom-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-light);margin-bottom:4px}
+.mom-value{font-size:22px;font-weight:700;letter-spacing:-.03em}
+.mom-change{margin-top:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block}
+.mom-change.up{background:var(--green-lt);color:var(--green)}
+.mom-change.down{background:var(--red-lt);color:var(--red)}
+.mom-change.forecast-badge{background:#fef3c7;color:#92400e}
+
+/* Forecast section */
+.forecast-banner{background:linear-gradient(135deg,#fffbeb,#fff7e6);border:1px solid #fcd34d;border-radius:var(--r);padding:16px 22px;margin-bottom:32px;display:flex;gap:16px;align-items:flex-start}
+.forecast-icon{font-size:28px;flex-shrink:0}
+.forecast-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.forecast-body{font-size:12px;color:var(--ink-mid);line-height:1.6}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg);padding:8px 12px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-light);border-bottom:2px solid var(--rule);white-space:nowrap}
+th.right,td.right{text-align:right}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f9fafb}
+.store-name{font-weight:500;max-width:200px;white-space:normal;min-width:140px}
+td.forecast-col{background:#fffbeb;font-weight:600;color:#92400e}
+th.forecast-col{background:#fef3c7;color:#92400e}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
+.badge.red{background:var(--red-lt);color:var(--red)}
+.badge.green{background:var(--green-lt);color:var(--green)}
+.badge.amber{background:var(--amber-lt);color:var(--amber)}
+.badge.forecast{background:#fef3c7;color:#92400e}
+
+/* Spark */
+.spark{display:flex;align-items:flex-end;gap:2px;height:22px}
+.spark-bar{width:9px;border-radius:2px 2px 0 0}
+.spark-bar.forecast-bar{opacity:.6;border:1px dashed #d97706;background:#fef3c7!important}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;margin-bottom:14px}
+.tab-btn{padding:5px 13px;font-size:12px;font-weight:600;border:1px solid var(--rule);border-radius:4px;background:var(--bg);color:var(--ink-mid);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* Search */
+.tbl-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.search-input{padding:5px 10px;border:1px solid var(--rule);border-radius:4px;font-size:12px;width:180px}
+
+/* Legend dot */
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+/* Footer */
+.footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--rule);font-size:11px;color:var(--ink-light);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media(max-width:960px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .chart-row.two-col,.chart-row.three-col{grid-template-columns:1fr}
+  .mom-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
+  .wrapper{padding:20px 18px 48px}
+  .header{padding:24px 18px 20px}
+}
+@media(max-width:560px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .mom-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="eyebrow">Affinitiv · RunMyLease Portfolio</div>
+    <h1>Internet Leads Report<br>Month-over-Month Trends · Jan–Jun 2026</h1>
+    <p class="header-sub">73 rooftops · New, Used & Other inventory · Jun forecast based on MTD through June 16</p>
+    <div class="header-meta">
+      <span>📅 June 17, 2026</span>
+      <span>📊 Source: RML CRM exports</span>
+      <span>🏢 73 stores</span>
+      <span>🔮 Jun full-month forecast: pace × (21 biz days ÷ 12 elapsed)</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- MoM Waterfall strip -->
+  <p class="section-title">Portfolio Total Leads — Month-over-Month</p>
+  <div class="mom-grid">
+    <div class="mom-cell">
+      <div class="mom-label">January</div>
+      <div class="mom-value">8,569</div>
+      <span class="mom-change flat">Baseline</span>
+    </div>
+    <div class="mom-cell">
+      <div class="mom-label">February</div>
+      <div class="mom-value">7,405</div>
+      <span class="mom-change down">↓ 13.6%</span>
+    </div>
+    <div class="mom-cell">
+      <div class="mom-label">March</div>
+      <div class="mom-value">8,176</div>
+      <span class="mom-change up">↑ 10.4%</span>
+    </div>
+    <div class="mom-cell">
+      <div class="mom-label">April</div>
+      <div class="mom-value">7,218</div>
+      <span class="mom-change down">↓ 11.7%</span>
+    </div>
+    <div class="mom-cell">
+      <div class="mom-label">May</div>
+      <div class="mom-value">4,408</div>
+      <span class="mom-change down">↓ 38.9%</span>
+    </div>
+  </div>
+
+  <!-- June Forecast Banner -->
+  <div class="forecast-banner">
+    <div class="forecast-icon">🔮</div>
+    <div>
+      <div class="forecast-title">June Full-Month Forecast: ~3,362 Total Leads</div>
+      <div class="forecast-body">
+        Based on 1,921 leads through June 16 (12 of 21 business days elapsed, pace factor ×1.75). If current daily rate holds,
+        June closes at <strong>~3,362 total leads</strong> — a further <strong>−23.7% decline vs. May</strong>, and the lowest month in the dataset.
+        New inventory is pacing to ~1,253 leads; Used to ~2,076. Jun MTD already shows 11 stores with zero leads — likely platform migrations or pauses.
+        <strong>Treat the forecast as directional</strong>: a strong second half of June could push the number toward 3,600–3,800 if activity picks up, but
+        the trend heading into the month makes a full recovery to May levels unlikely.
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Row with forecast -->
+  <p class="section-title">Portfolio Snapshot with June Forecast</p>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Jan Leads</div>
+      <div class="kpi-value">8,569</div>
+      <span class="kpi-delta flat">Peak month</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">May Leads</div>
+      <div class="kpi-value">4,408</div>
+      <span class="kpi-delta down">↓ 48.5% vs Jan</span>
+    </div>
+    <div class="kpi-card forecast-card">
+      <div class="kpi-label">Jun Forecast</div>
+      <div class="kpi-value" style="color:var(--amber)">~3,362</div>
+      <span class="kpi-delta flat">↓ 23.7% vs May</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Close Rate</div>
+      <div class="kpi-value">14.1%</div>
+      <span class="kpi-delta flat">Stable Jan–Apr</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Stores Active Jun</div>
+      <div class="kpi-value">62</div>
+      <span class="kpi-delta down">11 showing zero</span>
+    </div>
+  </div>
+
+  <!-- Main MoM Chart + Category Split -->
+  <p class="section-title">Monthly Trend Charts</p>
+  <div class="chart-row two-col">
+    <div class="card">
+      <div class="card-title">Total Leads by Month + June Forecast</div>
+      <div class="card-sub">Actual bars (solid blue) · June MTD + forecast shown separately</div>
+      <div class="tabs" id="mainTabs">
+        <button class="tab-btn active" onclick="switchChart('total',this)">Total</button>
+        <button class="tab-btn" onclick="switchChart('category',this)">New vs Used</button>
+        <button class="tab-btn" onclick="switchChart('deals',this)">Deals Delivered</button>
+        <button class="tab-btn" onclick="switchChart('mom',this)">MoM % Change</button>
+      </div>
+      <div class="chart-wrap" style="height:260px"><canvas id="mainChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">New vs. Used MoM</div>
+      <div class="card-sub">Share of total leads each month by inventory type</div>
+      <div class="chart-wrap" style="height:300px"><canvas id="splitPie"></canvas></div>
+    </div>
+  </div>
+
+  <!-- MoM % Change bars -->
+  <div class="chart-row three-col">
+    <div class="card">
+      <div class="card-title">New Inventory — MoM Leads</div>
+      <div class="card-sub">Monthly total + June forecast</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="newChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Used Inventory — MoM Leads</div>
+      <div class="card-sub">Monthly total + June forecast</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="usedChart"></canvas></div>
+    </div>
+    <div class="card forecast-card">
+      <div class="card-title">June Forecast by Category</div>
+      <div class="card-sub">Paced from MTD × 1.75 (21÷12 biz days)</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="forecastDonut"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Store MoM Table -->
+  <p class="section-title">All Stores — MoM Lead Volume + June Forecast</p>
+  <div class="card" style="margin-bottom:32px">
+    <div class="tbl-controls">
+      <div>
+        <div class="card-title">Store-Level MoM Breakdown</div>
+        <div class="card-sub">Amber column = June full-month forecast (MTD × 1.75 pace) · <span style="color:var(--red)">Red</span> = dropped &gt;40% MoM · <span style="color:var(--green)">Green</span> = grew</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="filterSelect" onchange="filterByTrend(this.value)" style="padding:5px 10px;border:1px solid var(--rule);border-radius:4px;font-size:12px">
+          <option value="all">All stores</option>
+          <option value="recovering">Recovering in Jun</option>
+          <option value="declining">Still declining</option>
+          <option value="zero">Went dark</option>
+        </select>
+        <input id="storeSearch" type="text" placeholder="Search store…" class="search-input" oninput="filterTable(this.value)">
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="storeTable">
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th class="right">Jan</th>
+            <th class="right">Feb</th>
+            <th class="right">Mar</th>
+            <th class="right">Apr</th>
+            <th class="right">May</th>
+            <th class="right forecast-col">Jun Fcst</th>
+            <th class="right">May→Jun Δ</th>
+            <th class="right">Jan→May Δ</th>
+            <th class="right">Trend</th>
+          </tr>
+        </thead>
+        <tbody id="storeTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- June Recovering Stores -->
+  <div class="chart-row two-col">
+    <div class="card forecast-card">
+      <div class="card-title">Stores Forecasting a June Recovery</div>
+      <div class="card-sub">Jun forecast &gt; May actual · paced from MTD</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="recoverChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Biggest May→Jun Declines (Forecast)</div>
+      <div class="card-sub">Stores where Jun pace shows continued drop vs May</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="deepDeclineChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Affinitiv Paid Media · RML Portfolio Analysis</span>
+    <span>Jun forecast: MTD through Jun 16 × (21 biz days ÷ 12 elapsed) = ×1.75 pace factor</span>
+    <span>Generated June 17, 2026</span>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const MONTHS_ACT  = ['Jan','Feb','Mar','Apr','May'];
+const MONTHS_FULL = ['Jan','Feb','Mar','Apr','May','Jun MTD','Jun Fcst'];
+
+const monthly = [
+  {m:'Jan',    total:8569, net:8172, deals:1262, New:2835, Used:5625, Other:109},
+  {m:'Feb',    total:7405, net:7094, deals: 950, New:2519, Used:4789, Other: 97},
+  {m:'Mar',    total:8176, net:7818, deals:1125, New:2760, Used:5305, Other:111},
+  {m:'Apr',    total:7218, net:6890, deals: 899, New:2566, Used:4553, Other: 99},
+  {m:'May',    total:4408, net:4242, deals: 624, New:1685, Used:2665, Other: 58},
+  {m:'Jun MTD',total:1921, net:1865, deals: 233, New: 716, Used:1186, Other: 19},
+  {m:'Jun Fcst',total:3362,net:3264, deals: 408, New:1253, Used:2076, Other: 33},
+];
+
+const momPct = [null, -13.6, 10.4, -11.7, -38.9]; // Jan→Feb, etc.
+const momForecast = -23.7; // May→Jun forecast
+
+const storeData = [
+  {store:'Arrigo Alfa Romeo Maserati of Palm Beach',Jan:74,Feb:49,Mar:40,Apr:45,May:15,JunMTD:14,JunFcst:24,JunPct:60.0,JanMayPct:-79.7,trend:'recovering'},
+  {store:'Arrigo CDJR at Sawgrass',Jan:170,Feb:134,Mar:166,Apr:124,May:101,JunMTD:39,JunFcst:68,JunPct:-32.7,JanMayPct:-40.6,trend:'declining'},
+  {store:'Arrigo CDJR of Ft. Pierce',Jan:239,Feb:236,Mar:227,Apr:219,May:109,JunMTD:34,JunFcst:60,JunPct:-45.0,JanMayPct:-54.4,trend:'declining'},
+  {store:'Arrigo CDJR of West Palm Beach',Jan:196,Feb:155,Mar:149,Apr:135,May:96,JunMTD:45,JunFcst:79,JunPct:-17.7,JanMayPct:-51.0,trend:'declining'},
+  {store:'Arrigo CDJR Margate',Jan:120,Feb:68,Mar:96,Apr:84,May:56,JunMTD:26,JunFcst:46,JunPct:-17.9,JanMayPct:-53.3,trend:'declining'},
+  {store:'Audi Tampa',Jan:54,Feb:56,Mar:79,Apr:85,May:71,JunMTD:39,JunFcst:68,JunPct:-4.2,JanMayPct:31.5,trend:'declining'},
+  {store:'BMW Mini of Wesley Chapel',Jan:129,Feb:89,Mar:151,Apr:134,May:69,JunMTD:35,JunFcst:61,JunPct:-11.6,JanMayPct:-46.5,trend:'declining'},
+  {store:'BMW of Coconut Creek',Jan:160,Feb:123,Mar:125,Apr:109,May:100,JunMTD:49,JunFcst:86,JunPct:-14.0,JanMayPct:-37.5,trend:'declining'},
+  {store:'BMW of Pompano Beach',Jan:91,Feb:100,Mar:73,Apr:124,May:102,JunMTD:49,JunFcst:86,JunPct:-15.7,JanMayPct:12.1,trend:'declining'},
+  {store:'BMW of South Miami / Mini',Jan:140,Feb:116,Mar:141,Apr:128,May:67,JunMTD:41,JunFcst:72,JunPct:7.5,JanMayPct:-52.1,trend:'recovering'},
+  {store:'BMW of Tampa',Jan:140,Feb:150,Mar:186,Apr:188,May:133,JunMTD:52,JunFcst:91,JunPct:-31.6,JanMayPct:-5.0,trend:'declining'},
+  {store:'Brandon Hyundai',Jan:175,Feb:168,Mar:234,Apr:230,May:90,JunMTD:43,JunFcst:75,JunPct:-16.7,JanMayPct:-48.6,trend:'declining'},
+  {store:'CDJR of Leesburg',Jan:177,Feb:143,Mar:144,Apr:144,May:91,JunMTD:35,JunFcst:61,JunPct:-33.0,JanMayPct:-48.6,trend:'declining'},
+  {store:'CDJR of Tampa Bay',Jan:202,Feb:182,Mar:187,Apr:173,May:106,JunMTD:53,JunFcst:93,JunPct:-12.3,JanMayPct:-47.5,trend:'declining'},
+  {store:'Central FL CDJR',Jan:94,Feb:108,Mar:94,Apr:123,May:90,JunMTD:43,JunFcst:75,JunPct:-16.7,JanMayPct:-4.3,trend:'declining'},
+  {store:'Ford of Clermont',Jan:102,Feb:97,Mar:94,Apr:71,May:36,JunMTD:12,JunFcst:21,JunPct:-41.7,JanMayPct:-64.7,trend:'declining'},
+  {store:'Ford of Port Richey',Jan:117,Feb:85,Mar:93,Apr:75,May:72,JunMTD:25,JunFcst:44,JunPct:-38.9,JanMayPct:-38.5,trend:'declining'},
+  {store:'Gator Ford',Jan:42,Feb:75,Mar:78,Apr:1,May:0,JunMTD:0,JunFcst:0,JunPct:0,JanMayPct:-100.0,trend:'zero'},
+  {store:'Hollywood Kia',Jan:91,Feb:116,Mar:133,Apr:105,May:103,JunMTD:44,JunFcst:77,JunPct:-25.2,JanMayPct:13.2,trend:'declining'},
+  {store:'Honda of Fort Myers',Jan:108,Feb:79,Mar:87,Apr:68,May:62,JunMTD:44,JunFcst:77,JunPct:24.2,JanMayPct:-42.6,trend:'recovering'},
+  {store:'Honda of Gainesville',Jan:99,Feb:63,Mar:72,Apr:86,May:40,JunMTD:35,JunFcst:61,JunPct:52.5,JanMayPct:-59.6,trend:'recovering'},
+  {store:'Honda of Lake City',Jan:70,Feb:53,Mar:104,Apr:70,May:35,JunMTD:25,JunFcst:44,JunPct:25.7,JanMayPct:-50.0,trend:'recovering'},
+  {store:'Honda of Ocala',Jan:314,Feb:317,Mar:376,Apr:265,May:133,JunMTD:81,JunFcst:142,JunPct:6.8,JanMayPct:-57.6,trend:'recovering'},
+  {store:'Honda of Port Richey',Jan:134,Feb:151,Mar:106,Apr:0,May:68,JunMTD:42,JunFcst:74,JunPct:8.8,JanMayPct:-49.3,trend:'recovering'},
+  {store:'Honda of Sarasota',Jan:99,Feb:62,Mar:78,Apr:67,May:55,JunMTD:28,JunFcst:49,JunPct:-10.9,JanMayPct:-44.4,trend:'declining'},
+  {store:'Honda of South Miami',Jan:173,Feb:205,Mar:185,Apr:181,May:141,JunMTD:26,JunFcst:46,JunPct:-67.4,JanMayPct:-18.5,trend:'declining'},
+  {store:'Hyundai of Fort Myers',Jan:99,Feb:100,Mar:161,Apr:149,May:111,JunMTD:55,JunFcst:96,JunPct:-13.5,JanMayPct:12.1,trend:'declining'},
+  {store:'Infiniti of South Miami',Jan:89,Feb:85,Mar:112,Apr:103,May:40,JunMTD:28,JunFcst:49,JunPct:22.5,JanMayPct:-55.1,trend:'recovering'},
+  {store:'Jaguar Land Rover Ocala',Jan:30,Feb:30,Mar:32,Apr:32,May:17,JunMTD:10,JunFcst:18,JunPct:5.9,JanMayPct:-43.3,trend:'recovering'},
+  {store:'Jaguar Land Rover Sarasota',Jan:50,Feb:53,Mar:69,Apr:29,May:27,JunMTD:11,JunFcst:19,JunPct:-29.6,JanMayPct:-46.0,trend:'declining'},
+  {store:'Jerry Ulm CDJR',Jan:207,Feb:153,Mar:176,Apr:163,May:76,JunMTD:22,JunFcst:38,JunPct:-50.0,JanMayPct:-63.3,trend:'declining'},
+  {store:'Kendall Hyundai',Jan:45,Feb:54,Mar:71,Apr:65,May:83,JunMTD:35,JunFcst:61,JunPct:-26.5,JanMayPct:84.4,trend:'declining'},
+  {store:'Kia of Cape Coral',Jan:151,Feb:144,Mar:163,Apr:123,May:73,JunMTD:32,JunFcst:56,JunPct:-23.3,JanMayPct:-51.7,trend:'declining'},
+  {store:'Kia of Clermont',Jan:72,Feb:46,Mar:71,Apr:84,May:38,JunMTD:14,JunFcst:24,JunPct:-36.8,JanMayPct:-47.2,trend:'declining'},
+  {store:'Kia of Leesburg',Jan:59,Feb:34,Mar:47,Apr:36,May:21,JunMTD:21,JunFcst:37,JunPct:76.2,JanMayPct:-64.4,trend:'recovering'},
+  {store:'Kia of Orange Park',Jan:163,Feb:162,Mar:170,Apr:139,May:48,JunMTD:27,JunFcst:47,JunPct:-2.1,JanMayPct:-70.6,trend:'declining'},
+  {store:'Kia of Port Charlotte',Jan:127,Feb:143,Mar:112,Apr:133,May:74,JunMTD:36,JunFcst:63,JunPct:-14.9,JanMayPct:-41.7,trend:'declining'},
+  {store:'Kia of Wesley Chapel',Jan:154,Feb:140,Mar:230,Apr:160,May:72,JunMTD:36,JunFcst:63,JunPct:-12.5,JanMayPct:-53.2,trend:'declining'},
+  {store:'Kia on Atlantic',Jan:112,Feb:134,Mar:153,Apr:114,May:85,JunMTD:34,JunFcst:60,JunPct:-29.4,JanMayPct:-24.1,trend:'declining'},
+  {store:'Lake City CDJR',Jan:96,Feb:71,Mar:90,Apr:66,May:40,JunMTD:24,JunFcst:42,JunPct:5.0,JanMayPct:-58.3,trend:'recovering'},
+  {store:'Land Rover Tampa',Jan:97,Feb:68,Mar:69,Apr:64,May:46,JunMTD:21,JunFcst:37,JunPct:-19.6,JanMayPct:-52.6,trend:'declining'},
+  {store:'Lexus of Sarasota',Jan:222,Feb:218,Mar:201,Apr:239,May:161,JunMTD:64,JunFcst:112,JunPct:-30.4,JanMayPct:-27.5,trend:'declining'},
+  {store:'Maserati Tampa',Jan:84,Feb:92,Mar:75,Apr:77,May:30,JunMTD:9,JunFcst:16,JunPct:-46.7,JanMayPct:-64.3,trend:'declining'},
+  {store:'Mazda at the Avenues',Jan:63,Feb:40,Mar:79,Apr:81,May:55,JunMTD:15,JunFcst:26,JunPct:-52.7,JanMayPct:-12.7,trend:'declining'},
+  {store:'Mazda of Fort Myers',Jan:46,Feb:58,Mar:60,Apr:40,May:2,JunMTD:0,JunFcst:0,JunPct:-100.0,JanMayPct:-95.7,trend:'zero'},
+  {store:'Mazda of Gainesville',Jan:57,Feb:59,Mar:40,Apr:50,May:27,JunMTD:12,JunFcst:21,JunPct:-22.2,JanMayPct:-52.6,trend:'declining'},
+  {store:'Mercedes-Benz of Gainesville',Jan:61,Feb:30,Mar:25,Apr:24,May:16,JunMTD:9,JunFcst:16,JunPct:0.0,JanMayPct:-73.8,trend:'declining'},
+  {store:'Morgan Chevrolet',Jan:151,Feb:144,Mar:137,Apr:128,May:54,JunMTD:21,JunFcst:37,JunPct:-31.5,JanMayPct:-64.2,trend:'declining'},
+  {store:'Naples CDJR',Jan:107,Feb:232,Mar:200,Apr:128,May:84,JunMTD:37,JunFcst:65,JunPct:-22.6,JanMayPct:-21.5,trend:'declining'},
+  {store:'Nissan of Clearwater',Jan:100,Feb:91,Mar:105,Apr:0,May:0,JunMTD:0,JunFcst:0,JunPct:0,JanMayPct:-100.0,trend:'zero'},
+  {store:'Nissan of Orange Park',Jan:220,Feb:201,Mar:197,Apr:179,May:87,JunMTD:32,JunFcst:56,JunPct:-35.6,JanMayPct:-60.5,trend:'declining'},
+  {store:'Rountree Moore Chevrolet',Jan:70,Feb:28,Mar:46,Apr:63,May:40,JunMTD:10,JunFcst:18,JunPct:-55.0,JanMayPct:-42.9,trend:'declining'},
+  {store:'Rountree Moore Ford',Jan:56,Feb:48,Mar:32,Apr:37,May:25,JunMTD:14,JunFcst:24,JunPct:-4.0,JanMayPct:-55.4,trend:'declining'},
+  {store:'Rountree Moore Kia',Jan:106,Feb:87,Mar:89,Apr:100,May:44,JunMTD:23,JunFcst:40,JunPct:-9.1,JanMayPct:-58.5,trend:'declining'},
+  {store:'Rountree Moore Nissan',Jan:125,Feb:106,Mar:88,Apr:62,May:43,JunMTD:15,JunFcst:26,JunPct:-39.5,JanMayPct:-65.6,trend:'declining'},
+  {store:'Subaru of Fort Myers',Jan:60,Feb:0,Mar:0,Apr:0,May:0,JunMTD:0,JunFcst:0,JunPct:0,JanMayPct:-100.0,trend:'zero'},
+  {store:'Subaru of North Tampa',Jan:45,Feb:47,Mar:48,Apr:64,May:57,JunMTD:23,JunFcst:40,JunPct:-29.8,JanMayPct:26.7,trend:'declining'},
+  {store:'Sun Toyota ⚠️',Jan:466,Feb:29,Mar:0,Apr:0,May:0,JunMTD:0,JunFcst:0,JunPct:0,JanMayPct:-100.0,trend:'zero'},
+  {store:'Tallahassee CDJR FIAT',Jan:95,Feb:101,Mar:100,Apr:79,May:28,JunMTD:15,JunFcst:26,JunPct:-7.1,JanMayPct:-70.5,trend:'declining'},
+  {store:'Tampa Bay Motorcars',Jan:38,Feb:34,Mar:45,Apr:58,May:20,JunMTD:9,JunFcst:16,JunPct:-20.0,JanMayPct:-47.4,trend:'declining'},
+  {store:'Toyota of Coconut Creek',Jan:380,Feb:359,Mar:380,Apr:463,May:223,JunMTD:99,JunFcst:173,JunPct:-22.4,JanMayPct:-41.3,trend:'declining'},
+  {store:'Toyota of Tampa Bay',Jan:277,Feb:254,Mar:291,Apr:246,May:132,JunMTD:0,JunFcst:0,JunPct:-100.0,JanMayPct:-52.3,trend:'zero'},
+  {store:'Villages Subaru',Jan:68,Feb:59,Mar:79,Apr:37,May:33,JunMTD:25,JunFcst:44,JunPct:33.3,JanMayPct:-51.5,trend:'recovering'},
+  {store:'VW of Gainesville',Jan:63,Feb:66,Mar:86,Apr:73,May:30,JunMTD:9,JunFcst:16,JunPct:-46.7,JanMayPct:-52.4,trend:'declining'},
+  {store:'VW of North Tampa',Jan:172,Feb:129,Mar:157,Apr:174,May:55,JunMTD:25,JunFcst:44,JunPct:-20.0,JanMayPct:-68.0,trend:'declining'},
+  {store:'VW of South Miami',Jan:62,Feb:62,Mar:95,Apr:69,May:56,JunMTD:31,JunFcst:54,JunPct:-3.6,JanMayPct:-9.7,trend:'declining'},
+  {store:'Wesley Chapel Nissan',Jan:48,Feb:24,Mar:34,Apr:39,May:26,JunMTD:14,JunFcst:24,JunPct:-7.7,JanMayPct:-45.8,trend:'declining'},
+  {store:'Westshore Honda',Jan:150,Feb:131,Mar:131,Apr:113,May:134,JunMTD:44,JunFcst:77,JunPct:-42.5,JanMayPct:-10.7,trend:'declining'},
+  {store:'Westshore Mazda',Jan:51,Feb:41,Mar:58,Apr:11,May:0,JunMTD:0,JunFcst:0,JunPct:0,JanMayPct:-100.0,trend:'zero'},
+];
+
+const recovering = storeData.filter(s=>s.trend==='recovering').sort((a,b)=>b.JunPct-a.JunPct).slice(0,8);
+const deepDecline = storeData.filter(s=>s.JunFcst>0&&s.JunPct<-35).sort((a,b)=>a.JunPct-b.JunPct).slice(0,8);
+
+// ── Chart.js Defaults ─────────────────────────────────────────────
+Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6b7280';
+
+// Helper: build bar color array (last = amber forecast)
+function barColors(n, base, forecastColor='#f59e0b') {
+  return Array(n-1).fill(base).concat([forecastColor]);
+}
+
+// ── Main Chart ────────────────────────────────────────────────────
+const mainLabels = ['Jan','Feb','Mar','Apr','May','Jun Fcst'];
+const mainActual = [8569,7405,8176,7218,4408,null];
+const mainFcst   = [null,null,null,null,4408,3362]; // connect from May
+
+let mainChart;
+const mainCtx = document.getElementById('mainChart').getContext('2d');
+
+function buildMainData(type) {
+  if(type==='total') return {
+    labels: mainLabels,
+    datasets:[
+      {type:'bar', label:'Actual Leads', data:[8569,7405,8176,7218,4408,null],
+       backgroundColor:['#1a56db','#1a56db','#1a56db','#1a56db','#1a56db','transparent'],
+       borderRadius:4, borderSkipped:false},
+      {type:'line', label:'Forecast', data:[null,null,null,null,4408,3362],
+       borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,.12)',
+       borderWidth:2, borderDash:[6,4], pointRadius:[0,0,0,0,5,5],
+       pointBackgroundColor:'#f59e0b', fill:true, tension:.3},
+    ]
+  };
+  if(type==='category') return {
+    labels: mainLabels,
+    datasets:[
+      {label:'New',  data:[2835,2519,2760,2566,1685,1253],
+       backgroundColor:barColors(6,'#1a56db'), borderRadius:3, stack:'s'},
+      {label:'Used', data:[5625,4789,5305,4553,2665,2076],
+       backgroundColor:barColors(6,'#7c3aed'), borderRadius:3, stack:'s'},
+    ]
+  };
+  if(type==='deals') return {
+    labels: mainLabels,
+    datasets:[{
+      type:'bar', label:'Deals Delivered',
+      data:[1262,950,1125,899,624,408],
+      backgroundColor:barColors(6,'#16a34a','#f59e0b'), borderRadius:4
+    },{
+      type:'line', label:'Forecast', data:[null,null,null,null,624,408],
+      borderColor:'#f59e0b', borderDash:[6,4], borderWidth:2,
+      pointRadius:[0,0,0,0,5,5], pointBackgroundColor:'#f59e0b', fill:false
+    }]
+  };
+  // MoM pct
+  return {
+    labels:['Jan→Feb','Feb→Mar','Mar→Apr','Apr→May','May→Jun (Fcst)'],
+    datasets:[{
+      label:'MoM % Change', type:'bar',
+      data:[-13.6,10.4,-11.7,-38.9,-23.7],
+      backgroundColor:[-13.6,10.4,-11.7,-38.9,-23.7].map((v,i)=>i===4?'#f59e0b':v>0?'#16a34a':'#dc2626'),
+      borderRadius:4
+    }]
+  };
+}
+
+function renderMain(type) {
+  if(mainChart) mainChart.destroy();
+  const isStacked = type==='category';
+  const isPct = type==='mom';
+  mainChart = new Chart(mainCtx,{
+    type:'bar', data: buildMainData(type),
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display: type!=='total' && type!=='deals'}},
+      scales:{
+        x:{grid:{display:false}, stacked:isStacked},
+        y:{grid:{color:'#f0f2f5'}, stacked:isStacked,
+           ticks:{callback:v=>isPct?v+'%':(v>=1000?(v/1000).toFixed(0)+'k':v)}}
+      }
+    }
+  });
+}
+renderMain('total');
+function switchChart(t,btn){
+  document.querySelectorAll('#mainTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderMain(t);
+}
+
+// ── Split stacked (New vs Used by month incl forecast) ────────────
+new Chart(document.getElementById('splitPie').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:mainLabels,
+    datasets:[
+      {label:'New', data:[2835,2519,2760,2566,1685,1253],
+       backgroundColor:barColors(6,'#1a56db'), stack:'s', borderRadius:2},
+      {label:'Used',data:[5625,4789,5305,4553,2665,2076],
+       backgroundColor:barColors(6,'#7c3aed'), stack:'s', borderRadius:2},
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom'}},
+    scales:{
+      x:{stacked:true,grid:{display:false}},
+      y:{stacked:true,grid:{color:'#f0f2f5'},
+         ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v}}
+    }
+  }
+});
+
+// ── New & Used mini charts ────────────────────────────────────────
+function miniBar(id, data, color) {
+  const cols = data.map((v,i)=>i===data.length-1?'#f59e0b':color);
+  new Chart(document.getElementById(id).getContext('2d'),{
+    type:'bar',
+    data:{labels:mainLabels, datasets:[{data, backgroundColor:cols, borderRadius:3}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{size:10}}},
+        y:{grid:{color:'#f0f2f5'}, ticks:{callback:v=>v>=1000?(v/1000).toFixed(0)+'k':v, font:{size:10}}}
+      }
+    }
+  });
+}
+miniBar('newChart',  [2835,2519,2760,2566,1685,1253], '#1a56db');
+miniBar('usedChart', [5625,4789,5305,4553,2665,2076], '#7c3aed');
+
+// ── Forecast donut ────────────────────────────────────────────────
+new Chart(document.getElementById('forecastDonut').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:['New (~1,253)','Used (~2,076)','Other (~33)'],
+    datasets:[{data:[1253,2076,33], backgroundColor:['#1a56db','#7c3aed','#0891b2'], borderWidth:0}]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, cutout:'65%',
+    plugins:{legend:{position:'bottom', labels:{font:{size:11}}}}
+  }
+});
+
+// ── Recovering stores chart ───────────────────────────────────────
+new Chart(document.getElementById('recoverChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels: recovering.map(s=>s.store),
+    datasets:[
+      {label:'May', data:recovering.map(s=>s.May), backgroundColor:'#dbeafe', borderRadius:3},
+      {label:'Jun Fcst', data:recovering.map(s=>s.JunFcst), backgroundColor:'#f59e0b', borderRadius:3},
+    ]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{color:'#f0f2f5'}}, y:{grid:{display:false}, ticks:{font:{size:11}}}}
+  }
+});
+
+// ── Deep decline chart ────────────────────────────────────────────
+new Chart(document.getElementById('deepDeclineChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels: deepDecline.map(s=>s.store),
+    datasets:[
+      {label:'May', data:deepDecline.map(s=>s.May), backgroundColor:'#dbeafe', borderRadius:3},
+      {label:'Jun Fcst', data:deepDecline.map(s=>s.JunFcst), backgroundColor:'#dc2626', borderRadius:3},
+    ]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom'}},
+    scales:{x:{grid:{color:'#f0f2f5'}}, y:{grid:{display:false}, ticks:{font:{size:11}}}}
+  }
+});
+
+// ── Store Table ───────────────────────────────────────────────────
+let activeFilter = 'all';
+let activeSearch = '';
+
+function momBadge(pct, isFcst=false) {
+  if(pct===null||pct===undefined) return '—';
+  if(isFcst) return `<span class="badge forecast">${pct>0?'+':''}${pct}%</span>`;
+  if(pct>5) return `<span class="badge green">+${pct}%</span>`;
+  if(pct<-40) return `<span class="badge red">${pct}%</span>`;
+  if(pct<-15) return `<span class="badge amber">${pct}%</span>`;
+  return `<span class="badge red">${pct}%</span>`;
+}
+
+function trendBadge(t) {
+  if(t==='recovering') return `<span class="badge green">↗ Recovering</span>`;
+  if(t==='zero') return `<span class="badge red">⚠ Went Dark</span>`;
+  return `<span class="badge amber">↘ Declining</span>`;
+}
+
+function makeSpark(s) {
+  const vals = [s.Jan,s.Feb,s.Mar,s.Apr,s.May,s.JunFcst];
+  const mx = Math.max(...vals)||1;
+  const colors = ['#1a56db','#1a56db','#1a56db','#1a56db','#1a56db','#f59e0b'];
+  return vals.map((v,i)=>{
+    const h = Math.max(Math.round((v/mx)*18),v>0?2:1);
+    const cls = i===5?'spark-bar forecast-bar':'spark-bar';
+    const bg = i===5?'':`background:${colors[i]}`;
+    return `<div class="${cls}" style="height:${h}px;${bg}"></div>`;
+  }).join('');
+}
+
+function renderTable() {
+  let data = storeData.filter(s => {
+    const matchFilter = activeFilter==='all'||s.trend===activeFilter;
+    const matchSearch = s.store.toLowerCase().includes(activeSearch.toLowerCase());
+    return matchFilter && matchSearch;
+  });
+  data.sort((a,b)=>a.JunPct-b.JunPct);
+
+  document.getElementById('storeTbody').innerHTML = data.map(s=>`
+    <tr>
+      <td class="store-name">${s.store}</td>
+      <td class="right">${s.Jan||'—'}</td>
+      <td class="right">${s.Feb||'—'}</td>
+      <td class="right">${s.Mar||'—'}</td>
+      <td class="right">${s.Apr||'—'}</td>
+      <td class="right">${s.May||'—'}</td>
+      <td class="right forecast-col">${s.JunFcst||'—'}</td>
+      <td class="right">${s.JunFcst>0?momBadge(s.JunPct,true):'<span class="badge red">dark</span>'}</td>
+      <td class="right">${momBadge(s.JanMayPct)}</td>
+      <td class="right">${trendBadge(s.trend)}</td>
+    </tr>
+  `).join('');
+}
+renderTable();
+
+function filterByTrend(val) { activeFilter=val; renderTable(); }
+function filterTable(q)     { activeSearch=q;   renderTable(); }
+</script>
+</body>
+</html>
