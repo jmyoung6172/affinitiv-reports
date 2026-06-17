@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affinitiv Reports</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e5e5e0;
+    --border-strong: #d0d0c8;
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --accent: #1a3a5c;
+    --accent-light: #e8eef5;
+    --accent-hover: #122b45;
+    --tag-bg: #eef2f7;
+    --tag-text: #1a3a5c;
+    --sidebar-w: 260px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px 40px;
+    width: 360px;
+    text-align: center;
+  }
+
+  .login-logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .login-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--surface);
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .login-input:focus { border-color: var(--accent); }
+
+  .login-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .login-btn:hover { background: var(--accent-hover); }
+
+  .login-error {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #c0392b;
+    min-height: 18px;
+  }
+
+  /* APP SHELL */
+  #app {
+    display: none;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+  }
+
+  .topbar-brand {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: 8px;
+  }
+
+  .topbar-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .topbar-title {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar-date {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .logout-btn {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+
+  .logout-btn:hover { border-color: var(--border-strong); color: var(--text); }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    height: 100vh;
+    padding-top: 52px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 16px 0;
+  }
+
+  .sidebar-section {
+    margin-bottom: 4px;
+  }
+
+  .sidebar-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 16px 4px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 0;
+    transition: background 0.1s, color 0.1s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .sidebar-item:hover { background: var(--bg); color: var(--text); }
+
+  .sidebar-item.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .sidebar-count {
+    margin-left: auto;
+    font-size: 11px;
+    background: var(--border);
+    color: var(--text-muted);
+    border-radius: 10px;
+    padding: 1px 7px;
+  }
+
+  .sidebar-item.active .sidebar-count {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid #c0d0e0;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+  }
+
+  /* REPORT LIST */
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .list-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .list-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .search-box {
+    padding: 7px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    font-size: 13px;
+    width: 220px;
+    outline: none;
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .search-box:focus { border-color: var(--accent); }
+
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .report-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .report-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(26,58,92,0.08);
+  }
+
+  .report-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .report-type-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: 5px;
+    padding: 3px 8px;
+  }
+
+  .report-ext {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+  }
+
+  .report-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .report-date {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* REPORT VIEWER */
+  #viewer {
+    display: none;
+  }
+
+  .viewer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .back-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
+  .viewer-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .viewer-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .viewer-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    min-height: 400px;
+  }
+
+  /* Markdown rendering */
+  .md-body h1 { font-size: 22px; font-weight: 500; margin-bottom: 12px; }
+  .md-body h2 { font-size: 18px; font-weight: 500; margin: 20px 0 8px; }
+  .md-body h3 { font-size: 15px; font-weight: 500; margin: 16px 0 6px; }
+  .md-body p { font-size: 14px; line-height: 1.7; margin-bottom: 12px; color: var(--text); }
+  .md-body ul, .md-body ol { padding-left: 20px; margin-bottom: 12px; }
+  .md-body li { font-size: 14px; line-height: 1.7; margin-bottom: 4px; }
+  .md-body table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+  .md-body th { background: var(--bg); padding: 8px 12px; text-align: left; font-weight: 500; border: 1px solid var(--border); }
+  .md-body td { padding: 7px 12px; border: 1px solid var(--border); }
+  .md-body tr:nth-child(even) td { background: var(--bg); }
+  .md-body code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  .md-body pre { background: var(--bg); padding: 14px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; }
+  .md-body pre code { background: none; padding: 0; }
+
+  /* HTML iframe */
+  .report-iframe {
+    width: 100%;
+    min-height: 700px;
+    border: none;
+    border-radius: 8px;
+  }
+
+  /* XLSX table */
+  .xlsx-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .xlsx-tab {
+    padding: 5px 14px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--bg);
+    color: var(--text-muted);
+  }
+
+  .xlsx-tab.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .xlsx-table-wrap { overflow-x: auto; }
+  .xlsx-table { border-collapse: collapse; font-size: 12px; width: 100%; }
+  .xlsx-table th { background: var(--bg); padding: 7px 12px; text-align: left; font-weight: 500; border: 1px solid var(--border); white-space: nowrap; }
+  .xlsx-table td { padding: 6px 12px; border: 1px solid var(--border); white-space: nowrap; }
+  .xlsx-table tr:nth-child(even) td { background: #fafaf8; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .empty-state-icon { font-size: 36px; margin-bottom: 12px; }
+
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Affinitiv</div>
+    <div class="login-title">Reports Portal</div>
+    <div class="login-sub">Enter your team password to continue</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="Password" />
+    <button class="login-btn" onclick="tryLogin()">Sign in</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <span class="topbar-brand">Affinitiv</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-title">Reports Portal</span>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbar-date"></span>
+      <button class="logout-btn" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Report Type</div>
+        <button class="sidebar-item active" data-type="all" onclick="filterType('all', this)">
+          All Reports
+          <span class="sidebar-count" id="count-all">0</span>
+        </button>
+      </div>
+      <div class="sidebar-section" id="type-nav"></div>
+    </nav>
+
+    <main class="main" id="main-content">
+
+      <!-- LIST VIEW -->
+      <div id="list-view">
+        <div class="list-header">
+          <div>
+            <div class="list-title" id="list-title">All Reports</div>
+            <div class="list-subtitle" id="list-subtitle"></div>
+          </div>
+          <input class="search-box" type="text" placeholder="Search reports…" oninput="searchReports(this.value)" />
+        </div>
+        <div class="report-grid" id="report-grid"></div>
+      </div>
+
+      <!-- VIEWER -->
+      <div id="viewer">
+        <div class="viewer-header">
+          <button class="back-btn" onclick="closeViewer()">← Back</button>
+          <div>
+            <div class="viewer-title" id="viewer-title"></div>
+            <div class="viewer-meta" id="viewer-meta"></div>
+          </div>
+        </div>
+        <div class="viewer-content" id="viewer-content"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const PASSWORD = 'Affinitiv2026!';
+const SESSION_KEY = 'affinitiv_auth';
+
+function tryLogin() {
+  const val = document.getElementById('pw-input').value;
+  if (val === PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('login-error').textContent = 'Incorrect password. Try again.';
+  }
+}
+
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+if (sessionStorage.getItem(SESSION_KEY)) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initApp();
+}
+
+document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+let allReports = [];
+let currentType = 'all';
+let currentSearch = '';
+
+async function initApp() {
+  try {
+    const res = await fetch('reports/index.json');
+    if (!res.ok) throw new Error('No index');
+    allReports = await res.json();
+  } catch {
+    allReports = [];
+  }
+  buildSidebar();
+  renderList();
+}
+
+function getReportType(filename) {
+  const parts = filename.replace(/\.[^.]+$/, '').split('-');
+  for (let i = 0; i < parts.length; i++) {
+    if (/^\d{4}$/.test(parts[i])) {
+      return parts.slice(0, i).join('-').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Report';
+    }
+  }
+  return parts.slice(0, -1).join(' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Report';
+}
+
+function getExt(filename) {
+  return filename.split('.').pop().toLowerCase();
+}
+
+function formatDate(filename) {
+  const m = filename.match(/(\d{4}-\d{2}-\d{2})/);
+  if (!m) return '';
+  const d = new Date(m[1] + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function buildSidebar() {
+  const typeCounts = {};
+  allReports.forEach(r => {
+    const t = getReportType(r.name);
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+
+  document.getElementById('count-all').textContent = allReports.length;
+
+  const nav = document.getElementById('type-nav');
+  if (Object.keys(typeCounts).length > 0) {
+    nav.innerHTML = '<div class="sidebar-section-label">By Type</div>' +
+      Object.entries(typeCounts).sort((a,b) => a[0].localeCompare(b[0])).map(([t, c]) =>
+        `<button class="sidebar-item" data-type="${t}" onclick="filterType('${t.replace(/'/g,"\\'")}', this)">
+          ${t}
+          <span class="sidebar-count">${c}</span>
+        </button>`
+      ).join('');
+  }
+}
+
+function filterType(type, el) {
+  currentType = type;
+  currentSearch = '';
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function searchReports(val) {
+  currentSearch = val.toLowerCase();
+  renderList();
+}
+
+function renderList() {
+  closeViewer(true);
+  const filtered = allReports.filter(r => {
+    const typeMatch = currentType === 'all' || getReportType(r.name) === currentType;
+    const searchMatch = !currentSearch || r.name.toLowerCase().includes(currentSearch);
+    return typeMatch && searchMatch;
+  });
+
+  const title = currentType === 'all' ? 'All Reports' : currentType;
+  document.getElementById('list-title').textContent = title;
+  document.getElementById('list-subtitle').textContent = `${filtered.length} report${filtered.length !== 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('report-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div>No reports found</div>';
+    return;
+  }
+
+  filtered.sort((a, b) => b.name.localeCompare(a.name));
+  grid.innerHTML = filtered.map(r => {
+    const ext = getExt(r.name);
+    const type = getReportType(r.name);
+    const date = formatDate(r.name);
+    return `<div class="report-card" onclick="openReport(${JSON.stringify(r).replace(/"/g,'&quot;')})">
+      <div class="report-card-top">
+        <span class="report-type-badge">${type}</span>
+        <span class="report-ext">.${ext}</span>
+      </div>
+      <div class="report-name">${r.name}</div>
+      ${date ? `<div class="report-date">${date}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function openReport(report) {
+  document.getElementById('list-view').style.display = 'none';
+  document.getElementById('viewer').style.display = 'block';
+  document.getElementById('viewer-title').textContent = report.name;
+  document.getElementById('viewer-meta').textContent = formatDate(report.name) || '';
+  document.getElementById('viewer-content').innerHTML = '<div style="padding:40px;text-align:center;color:#999">Loading…</div>';
+
+  const ext = getExt(report.name);
+  const url = `reports/${report.name}`;
+
+  if (ext === 'html') {
+    document.getElementById('viewer-content').innerHTML =
+      `<iframe class="report-iframe" src="${url}"></iframe>`;
+
+  } else if (ext === 'md') {
+    const res = await fetch(url);
+    const text = await res.text();
+    document.getElementById('viewer-content').innerHTML =
+      `<div class="md-body">${marked.parse(text)}</div>`;
+
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    const res = await fetch(url);
+    const buf = await res.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    renderXLSX(wb);
+
+  } else {
+    document.getElementById('viewer-content').innerHTML =
+      `<div class="empty-state"><div class="empty-state-icon">📎</div>
+       Preview not available for .${ext} files.<br><br>
+       <a href="${url}" download style="color:var(--accent);font-weight:500">Download file</a></div>`;
+  }
+}
+
+function renderXLSX(wb, sheetIndex = 0) {
+  const tabs = wb.SheetNames.map((n, i) =>
+    `<button class="xlsx-tab ${i === sheetIndex ? 'active' : ''}" onclick="renderXLSX(window._wb, ${i})">${n}</button>`
+  ).join('');
+
+  const ws = wb.Sheets[wb.SheetNames[sheetIndex]];
+  const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+  if (!data.length) {
+    document.getElementById('viewer-content').innerHTML = `<div class="xlsx-tabs">${tabs}</div><div class="empty-state">Empty sheet</div>`;
+    return;
+  }
+
+  const headers = data[0];
+  const rows = data.slice(1);
+  const table = `<div class="xlsx-table-wrap"><table class="xlsx-table">
+    <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${headers.map((_, i) => `<td>${r[i] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+
+  window._wb = wb;
+  document.getElementById('viewer-content').innerHTML = `<div class="xlsx-tabs">${tabs}</div>${table}`;
+}
+
+function closeViewer(silent = false) {
+  document.getElementById('viewer').style.display = 'none';
+  document.getElementById('list-view').style.display = 'block';
+}
+</script>
+</body>
+</html>
