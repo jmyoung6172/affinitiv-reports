@@ -9,9 +9,9 @@
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 $REPO_PATH     = "C:\AffinitivReports"          # Local clone of your GitHub repo
-$REPORTS_SOURCE = "C:\Users\JeffreyYoung\Reports"
+$REPORTS_SOURCE = "C:\Users\JeffreyYoung\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\outputs"
 $REPORTS_DEST  = "$REPO_PATH\reports"            # Subfolder inside the repo
-$EXTENSIONS    = @("*.html", "*.md", "*.xlsx", "*.csv", "*.pdf")
+$EXTENSIONS    = @("*.html", "*.md", "*.xlsx", "*.xls", "*.csv", "*.pdf")
 # ──────────────────────────────────────────────────────────────────────────────
 
 Write-Host ""
@@ -68,7 +68,8 @@ foreach ($ext in $EXTENSIONS) {
 }
 
 $reportFiles = $reportFiles | Sort-Object { $_.name } -Descending
-ConvertTo-Json -InputObject @($reportFiles) -Depth 3 | Set-Content $indexPath -Encoding UTF8Write-Host "Updated index.json ($($reportFiles.Count) reports total)" -ForegroundColor Cyan
+$reportFiles | ConvertTo-Json -Depth 3 | Set-Content $indexPath -Encoding UTF8
+Write-Host "Updated index.json ($($reportFiles.Count) reports total)" -ForegroundColor Cyan
 
 # Git commit and push
 Set-Location $REPO_PATH
