@@ -11,7 +11,7 @@
 $REPO_PATH     = "C:\AffinitivReports"          # Local clone of your GitHub repo
 $REPORTS_SOURCE = "C:\Users\JeffreyYoung\Reports"
 $REPORTS_DEST  = "$REPO_PATH\reports"            # Subfolder inside the repo
-$EXTENSIONS    = @("*.html", "*.md", "*.xlsx", "*.xls", "*.csv", "*.pdf")
+$EXTENSIONS    = @("*.html", "*.md", "*.xlsx", "*.csv", "*.pdf")
 # ──────────────────────────────────────────────────────────────────────────────
 
 Write-Host ""
