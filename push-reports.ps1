@@ -68,8 +68,7 @@ foreach ($ext in $EXTENSIONS) {
 }
 
 $reportFiles = $reportFiles | Sort-Object { $_.name } -Descending
-$reportFiles | ConvertTo-Json -Depth 3 | Set-Content $indexPath -Encoding UTF8
-Write-Host "Updated index.json ($($reportFiles.Count) reports total)" -ForegroundColor Cyan
+ConvertTo-Json -InputObject @($reportFiles) -Depth 3 | Set-Content $indexPath -Encoding UTF8Write-Host "Updated index.json ($($reportFiles.Count) reports total)" -ForegroundColor Cyan
 
 # Git commit and push
 Set-Location $REPO_PATH
