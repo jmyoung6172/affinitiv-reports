@@ -4,7 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>All Internet Leads Report — Jan–Jun 2026</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+// ── Inventory switcher ────────────────────────────────────────────
+let activeInventory = 'All';
+
+function switchInventory(inv, btn) {
+  document.querySelectorAll('#invFilter .inv-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeInventory = inv;
+  storeData = storeDatasets[inv];
+  // Update subtitle
+  const subtitles = {
+    All: 'Amber column = June full-month forecast · sorted by Jan→May % change · All inventory combined',
+    New: 'Amber column = June full-month forecast · sorted by Jan→May % change · New car leads only',
+    Used: 'Amber column = June full-month forecast · sorted by Jan→May % change · Used car leads only',
+  };
+  document.querySelector('.card-sub.tbl-sub').textContent = subtitles[inv];
+  activeFilter = 'all';
+  activeSearch = '';
+  document.getElementById('filterSel').value = 'all';
+  document.getElementById('srchInput').value = '';
+  renderTable();
+}
+
+</script>
 <style>
 :root {
   --ink:#0d1117; --ink-mid:#3a4150; --ink-light:#6b7280;
@@ -122,6 +145,11 @@ th.fcst-col{background:#fef3c7;color:#92400e}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .mom-grid{grid-template-columns:1fr}
 }
+
+/* Inventory filter pills */
+.inv-filter{display:flex;gap:2px;background:var(--bg);border:1px solid var(--rule);border-radius:5px;padding:2px}
+.inv-btn{padding:4px 12px;font-size:12px;font-weight:600;border:none;border-radius:4px;background:transparent;color:var(--ink-mid);cursor:pointer;transition:all .15s;white-space:nowrap}
+.inv-btn.active{background:var(--blue);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 </style>
 </head>
 <body>
@@ -292,9 +320,14 @@ th.fcst-col{background:#fef3c7;color:#92400e}
     <div class="tbl-controls">
       <div>
         <div class="card-title">Store-Level MoM Breakdown · 75 Rooftops</div>
-        <div class="card-sub">Amber column = June full-month forecast (MTD × 1.75 pace) · sorted by Jan→May % change</div>
+        <div class="card-sub tbl-sub">Amber column = June full-month forecast (MTD × 1.75 pace) · sorted by Jan→May % change</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="inv-filter" id="invFilter">
+          <button class="inv-btn active" onclick="switchInventory('All',this)">All Inventory</button>
+          <button class="inv-btn" onclick="switchInventory('New',this)">New Car</button>
+          <button class="inv-btn" onclick="switchInventory('Used',this)">Used Car</button>
+        </div>
         <select id="filterSel" onchange="applyFilter(this.value)" style="padding:5px 10px;border:1px solid var(--rule);border-radius:4px;font-size:12px">
           <option value="all">All stores</option>
           <option value="recovering">Recovering in Jun</option>
@@ -420,7 +453,8 @@ const deepDec = [
   {store:'Arrigo CDJR W Palm Bch',May:1111,JunFcst:732,pct:-34.1},
 ];
 
-const storeData = [
+const storeDatasets = {
+  All: [
   {store:'Arrigo Alfa Romeo Maserati of Palm Beach',Jan:419,Feb:340,Mar:374,Apr:345,May:236,JunMTD:135,JunFcst:236,JunPct:0.0,JanMayPct:-43.7,trend:'declining'},
   {store:'Arrigo CDJR at Sawgrass',Jan:1233,Feb:1087,Mar:1137,Apr:1217,May:960,JunMTD:453,JunFcst:793,JunPct:-17.4,JanMayPct:-22.1,trend:'declining'},
   {store:'Arrigo CDJR of Ft. Pierce',Jan:929,Feb:880,Mar:879,Apr:862,May:589,JunMTD:244,JunFcst:427,JunPct:-27.5,JanMayPct:-36.6,trend:'declining'},
@@ -431,7 +465,7 @@ const storeData = [
   {store:'BMW of Coconut Creek',Jan:1129,Feb:821,Mar:882,Apr:797,May:829,JunMTD:423,JunFcst:740,JunPct:-10.7,JanMayPct:-26.6,trend:'declining'},
   {store:'BMW of Pompano Beach',Jan:744,Feb:691,Mar:697,Apr:806,May:665,JunMTD:401,JunFcst:702,JunPct:5.6,JanMayPct:-10.6,trend:'recovering'},
   {store:'BMW of Sarasota',Jan:857,Feb:732,Mar:793,Apr:697,May:604,JunMTD:267,JunFcst:467,JunPct:-22.7,JanMayPct:-29.5,trend:'declining'},
-  {store:'BMW of South Miami and Mini',Jan:1488,Feb:1352,Mar:1590,Apr:1416,May:1024,JunMTD:531,JunFcst:929,JunPct:-9.3,JanMayPct:-31.2,trend:'declining'},
+  {store:'BMW of South Miami and Mini of South Miami',Jan:1488,Feb:1352,Mar:1590,Apr:1416,May:1024,JunMTD:531,JunFcst:929,JunPct:-9.3,JanMayPct:-31.2,trend:'declining'},
   {store:'BMW of Tampa',Jan:990,Feb:974,Mar:952,Apr:990,May:1016,JunMTD:473,JunFcst:828,JunPct:-18.5,JanMayPct:2.6,trend:'declining'},
   {store:'Brandon Honda',Jan:1581,Feb:1483,Mar:1736,Apr:1309,May:1310,JunMTD:606,JunFcst:1060,JunPct:-19.1,JanMayPct:-17.1,trend:'declining'},
   {store:'Brandon Hyundai',Jan:1020,Feb:1187,Mar:1587,Apr:1700,May:1171,JunMTD:558,JunFcst:976,JunPct:-16.7,JanMayPct:14.8,trend:'declining'},
@@ -495,8 +529,163 @@ const storeData = [
   {store:'Volkswagen of South Miami',Jan:849,Feb:779,Mar:946,Apr:820,May:634,JunMTD:351,JunFcst:614,JunPct:-3.2,JanMayPct:-25.3,trend:'declining'},
   {store:'Wesley Chapel Nissan',Jan:384,Feb:281,Mar:307,Apr:380,May:334,JunMTD:160,JunFcst:280,JunPct:-16.2,JanMayPct:-13.0,trend:'declining'},
   {store:'Westshore Honda',Jan:1210,Feb:1138,Mar:1334,Apr:1178,May:1022,JunMTD:413,JunFcst:723,JunPct:-29.3,JanMayPct:-15.5,trend:'declining'},
-  {store:'Westshore Mazda',Jan:706,Feb:764,Mar:777,Apr:760,May:757,JunMTD:404,JunFcst:707,JunPct:-6.6,JanMayPct:7.2,trend:'declining'},
-];
+  {store:'Westshore Mazda',Jan:706,Feb:764,Mar:777,Apr:760,May:757,JunMTD:404,JunFcst:707,JunPct:-6.6,JanMayPct:7.2,trend:'declining'}
+],
+  New: [
+  {store:'Arrigo Alfa Romeo Maserati of Palm Beach',Jan:26,Feb:14,Mar:12,Apr:22,May:12,JunMTD:8,JunFcst:14,JunPct:16.7,JanMayPct:-53.8,trend:'recovering'},
+  {store:'Arrigo CDJR at Sawgrass',Jan:504,Feb:396,Mar:508,Apr:520,May:272,JunMTD:130,JunFcst:228,JunPct:-16.2,JanMayPct:-46.0,trend:'declining'},
+  {store:'Arrigo CDJR of Ft. Pierce',Jan:283,Feb:262,Mar:279,Apr:283,May:186,JunMTD:75,JunFcst:131,JunPct:-29.6,JanMayPct:-34.3,trend:'declining'},
+  {store:'Arrigo CDJR of West Palm Beach',Jan:296,Feb:273,Mar:266,Apr:264,May:277,JunMTD:110,JunFcst:192,JunPct:-30.7,JanMayPct:-6.4,trend:'declining'},
+  {store:'Arrigo Chrysler Dodge Jeep Ram Margate',Jan:218,Feb:207,Mar:238,Apr:186,May:182,JunMTD:74,JunFcst:130,JunPct:-28.6,JanMayPct:-16.5,trend:'declining'},
+  {store:'Audi Tampa',Jan:131,Feb:114,Mar:120,Apr:128,May:123,JunMTD:49,JunFcst:86,JunPct:-30.1,JanMayPct:-6.1,trend:'declining'},
+  {store:'BMW Mini of Wesley Chapel',Jan:167,Feb:113,Mar:158,Apr:135,May:131,JunMTD:58,JunFcst:102,JunPct:-22.1,JanMayPct:-21.6,trend:'declining'},
+  {store:'BMW of Coconut Creek',Jan:275,Feb:293,Mar:299,Apr:286,May:310,JunMTD:153,JunFcst:268,JunPct:-13.5,JanMayPct:12.7,trend:'declining'},
+  {store:'BMW of Pompano Beach',Jan:216,Feb:178,Mar:161,Apr:151,May:178,JunMTD:114,JunFcst:200,JunPct:12.4,JanMayPct:-17.6,trend:'recovering'},
+  {store:'BMW of Sarasota',Jan:191,Feb:179,Mar:208,Apr:167,May:145,JunMTD:78,JunFcst:136,JunPct:-6.2,JanMayPct:-24.1,trend:'declining'},
+  {store:'BMW of South Miami and Mini of South Miami',Jan:639,Feb:630,Mar:717,Apr:684,May:523,JunMTD:239,JunFcst:418,JunPct:-20.1,JanMayPct:-18.2,trend:'declining'},
+  {store:'BMW of Tampa',Jan:242,Feb:202,Mar:238,Apr:223,May:218,JunMTD:111,JunFcst:194,JunPct:-11.0,JanMayPct:-9.9,trend:'declining'},
+  {store:'Brandon Honda',Jan:460,Feb:449,Mar:638,Apr:485,May:523,JunMTD:230,JunFcst:402,JunPct:-23.1,JanMayPct:13.7,trend:'declining'},
+  {store:'Brandon Hyundai',Jan:225,Feb:340,Mar:286,Apr:368,May:313,JunMTD:172,JunFcst:301,JunPct:-3.8,JanMayPct:39.1,trend:'declining'},
+  {store:'CDJR of Leesburg',Jan:273,Feb:237,Mar:255,Apr:236,May:158,JunMTD:78,JunFcst:136,JunPct:-13.9,JanMayPct:-42.1,trend:'declining'},
+  {store:'CDJR of Tampa Bay',Jan:213,Feb:191,Mar:218,Apr:232,May:167,JunMTD:73,JunFcst:128,JunPct:-23.4,JanMayPct:-21.6,trend:'declining'},
+  {store:'Central Florida Chrysler Dodge Jeep RAM',Jan:235,Feb:245,Mar:272,Apr:369,May:275,JunMTD:141,JunFcst:247,JunPct:-10.2,JanMayPct:17.0,trend:'declining'},
+  {store:'Ford of Clermont',Jan:175,Feb:200,Mar:211,Apr:167,May:134,JunMTD:60,JunFcst:105,JunPct:-21.6,JanMayPct:-23.4,trend:'declining'},
+  {store:'Ford of Port Richey',Jan:276,Feb:278,Mar:305,Apr:192,May:201,JunMTD:84,JunFcst:147,JunPct:-26.9,JanMayPct:-27.2,trend:'declining'},
+  {store:'Gator Ford',Jan:142,Feb:159,Mar:174,Apr:155,May:119,JunMTD:51,JunFcst:89,JunPct:-25.2,JanMayPct:-16.2,trend:'declining'},
+  {store:'Hollywood Kia',Jan:604,Feb:632,Mar:620,Apr:424,May:454,JunMTD:171,JunFcst:299,JunPct:-34.1,JanMayPct:-24.8,trend:'declining'},
+  {store:'Honda of Fort Myers',Jan:218,Feb:267,Mar:310,Apr:269,May:267,JunMTD:119,JunFcst:208,JunPct:-22.1,JanMayPct:22.5,trend:'declining'},
+  {store:'Honda of Gainesville',Jan:184,Feb:152,Mar:211,Apr:194,May:164,JunMTD:111,JunFcst:194,JunPct:18.3,JanMayPct:-10.9,trend:'recovering'},
+  {store:'Honda of Lake City',Jan:66,Feb:134,Mar:113,Apr:129,May:118,JunMTD:74,JunFcst:130,JunPct:10.2,JanMayPct:78.8,trend:'recovering'},
+  {store:'Honda of Ocala',Jan:226,Feb:267,Mar:336,Apr:260,May:240,JunMTD:116,JunFcst:203,JunPct:-15.4,JanMayPct:6.2,trend:'declining'},
+  {store:'Honda of Port Richey',Jan:264,Feb:218,Mar:258,Apr:273,May:258,JunMTD:129,JunFcst:226,JunPct:-12.4,JanMayPct:-2.3,trend:'declining'},
+  {store:'Honda of Sarasota',Jan:198,Feb:156,Mar:193,Apr:185,May:208,JunMTD:113,JunFcst:198,JunPct:-4.8,JanMayPct:5.1,trend:'declining'},
+  {store:'Honda of South Miami',Jan:483,Feb:567,Mar:651,Apr:658,May:616,JunMTD:235,JunFcst:411,JunPct:-33.3,JanMayPct:27.5,trend:'declining'},
+  {store:'Hyundai of Fort Myers',Jan:328,Feb:280,Mar:441,Apr:397,May:348,JunMTD:166,JunFcst:290,JunPct:-16.7,JanMayPct:6.1,trend:'declining'},
+  {store:'Infiniti of South Miami',Jan:99,Feb:89,Mar:106,Apr:112,May:62,JunMTD:49,JunFcst:86,JunPct:38.7,JanMayPct:-37.4,trend:'recovering'},
+  {store:'Jaguar Land Rover Ocala',Jan:29,Feb:30,Mar:25,Apr:39,May:13,JunMTD:12,JunFcst:21,JunPct:61.5,JanMayPct:-55.2,trend:'recovering'},
+  {store:'Jaguar Land Rover Sarasota',Jan:78,Feb:61,Mar:77,Apr:63,May:44,JunMTD:30,JunFcst:52,JunPct:18.2,JanMayPct:-43.6,trend:'recovering'},
+  {store:'Jerry Ulm CDJR',Jan:496,Feb:486,Mar:507,Apr:509,May:456,JunMTD:201,JunFcst:352,JunPct:-22.8,JanMayPct:-8.1,trend:'declining'},
+  {store:'Kendall Hyundai',Jan:242,Feb:246,Mar:270,Apr:263,May:270,JunMTD:132,JunFcst:231,JunPct:-14.4,JanMayPct:11.6,trend:'declining'},
+  {store:'Kia of Cape Coral',Jan:266,Feb:231,Mar:256,Apr:199,May:234,JunMTD:128,JunFcst:224,JunPct:-4.3,JanMayPct:-12.0,trend:'declining'},
+  {store:'Kia of Clermont',Jan:654,Feb:688,Mar:714,Apr:783,May:703,JunMTD:322,JunFcst:564,JunPct:-19.8,JanMayPct:7.5,trend:'declining'},
+  {store:'Kia of Leesburg',Jan:438,Feb:391,Mar:481,Apr:455,May:380,JunMTD:183,JunFcst:320,JunPct:-15.8,JanMayPct:-13.2,trend:'declining'},
+  {store:'Kia of Orange Park',Jan:241,Feb:201,Mar:249,Apr:208,May:216,JunMTD:110,JunFcst:192,JunPct:-11.1,JanMayPct:-10.4,trend:'declining'},
+  {store:'Kia of Port Charlotte',Jan:357,Feb:313,Mar:365,Apr:500,May:409,JunMTD:261,JunFcst:457,JunPct:11.7,JanMayPct:14.6,trend:'recovering'},
+  {store:'Kia of Wesley Chapel',Jan:386,Feb:410,Mar:621,Apr:640,May:542,JunMTD:256,JunFcst:448,JunPct:-17.3,JanMayPct:40.4,trend:'declining'},
+  {store:'Kia on Atlantic',Jan:291,Feb:271,Mar:301,Apr:301,May:337,JunMTD:193,JunFcst:338,JunPct:0.3,JanMayPct:15.8,trend:'recovering'},
+  {store:'Lake City CDJR',Jan:71,Feb:58,Mar:73,Apr:67,May:101,JunMTD:57,JunFcst:100,JunPct:-1.0,JanMayPct:42.3,trend:'declining'},
+  {store:'Lamborghini Sarasota',Jan:3,Feb:6,Mar:3,Apr:10,May:4,JunMTD:5,JunFcst:9,JunPct:125.0,JanMayPct:33.3,trend:'recovering'},
+  {store:'Land Rover Tampa',Jan:119,Feb:99,Mar:101,Apr:67,May:47,JunMTD:23,JunFcst:40,JunPct:-14.9,JanMayPct:-60.5,trend:'declining'},
+  {store:'Lexus of Sarasota',Jan:367,Feb:320,Mar:355,Apr:380,May:311,JunMTD:128,JunFcst:224,JunPct:-28.0,JanMayPct:-15.3,trend:'declining'},
+  {store:'Maserati Tampa',Jan:30,Feb:25,Mar:12,Apr:20,May:19,JunMTD:12,JunFcst:21,JunPct:10.5,JanMayPct:-36.7,trend:'recovering'},
+  {store:'Mazda at the Avenues',Jan:206,Feb:138,Mar:150,Apr:154,May:158,JunMTD:86,JunFcst:150,JunPct:-5.1,JanMayPct:-23.3,trend:'declining'},
+  {store:'Mazda of Fort Myers',Jan:129,Feb:118,Mar:108,Apr:130,May:155,JunMTD:88,JunFcst:154,JunPct:-0.6,JanMayPct:20.2,trend:'declining'},
+  {store:'Mazda of Gainesville',Jan:77,Feb:50,Mar:75,Apr:139,May:65,JunMTD:24,JunFcst:42,JunPct:-35.4,JanMayPct:-15.6,trend:'declining'},
+  {store:'Mazda of St. Augustine',Jan:102,Feb:70,Mar:93,Apr:97,May:113,JunMTD:55,JunFcst:96,JunPct:-15.0,JanMayPct:10.8,trend:'declining'},
+  {store:'Mercedes-Benz of Gainesville',Jan:78,Feb:95,Mar:76,Apr:93,May:78,JunMTD:40,JunFcst:70,JunPct:-10.3,JanMayPct:0.0,trend:'declining'},
+  {store:'Morgan Chevrolet',Jan:156,Feb:170,Mar:195,Apr:173,May:101,JunMTD:55,JunFcst:96,JunPct:-5.0,JanMayPct:-35.3,trend:'declining'},
+  {store:'Naples Chrysler Dodge Jeep Ram',Jan:269,Feb:313,Mar:254,Apr:237,May:201,JunMTD:99,JunFcst:173,JunPct:-13.9,JanMayPct:-25.3,trend:'declining'},
+  {store:'Naples Mazda',Jan:97,Feb:57,Mar:89,Apr:100,May:100,JunMTD:38,JunFcst:66,JunPct:-34.0,JanMayPct:3.1,trend:'declining'},
+  {store:'Nissan of Clearwater',Jan:202,Feb:210,Mar:184,Apr:227,May:185,JunMTD:66,JunFcst:116,JunPct:-37.3,JanMayPct:-8.4,trend:'declining'},
+  {store:'Nissan of Orange Park',Jan:203,Feb:224,Mar:188,Apr:192,May:156,JunMTD:83,JunFcst:145,JunPct:-7.1,JanMayPct:-23.2,trend:'declining'},
+  {store:'Porsche Tampa',Jan:91,Feb:94,Mar:87,Apr:81,May:85,JunMTD:52,JunFcst:91,JunPct:7.1,JanMayPct:-6.6,trend:'recovering'},
+  {store:'Rountree Moore Chevrolet',Jan:50,Feb:36,Mar:52,Apr:41,May:40,JunMTD:24,JunFcst:42,JunPct:5.0,JanMayPct:-20.0,trend:'recovering'},
+  {store:'Rountree Moore Ford',Jan:37,Feb:41,Mar:48,Apr:42,May:38,JunMTD:18,JunFcst:32,JunPct:-15.8,JanMayPct:2.7,trend:'declining'},
+  {store:'Rountree Moore Kia',Jan:88,Feb:89,Mar:95,Apr:100,May:91,JunMTD:59,JunFcst:103,JunPct:13.2,JanMayPct:3.4,trend:'recovering'},
+  {store:'Rountree Moore Nissan',Jan:110,Feb:94,Mar:111,Apr:66,May:86,JunMTD:44,JunFcst:77,JunPct:-10.5,JanMayPct:-21.8,trend:'declining'},
+  {store:'Subaru of Fort Myers',Jan:268,Feb:241,Mar:248,Apr:209,May:199,JunMTD:101,JunFcst:177,JunPct:-11.1,JanMayPct:-25.7,trend:'declining'},
+  {store:'Subaru of North Tampa',Jan:237,Feb:213,Mar:259,Apr:213,May:194,JunMTD:116,JunFcst:203,JunPct:4.6,JanMayPct:-18.1,trend:'recovering'},
+  {store:'Sun Toyota',Jan:469,Feb:413,Mar:474,Apr:546,May:557,JunMTD:286,JunFcst:500,JunPct:-10.2,JanMayPct:18.8,trend:'declining'},
+  {store:'Tallahassee CDJR FIAT',Jan:60,Feb:64,Mar:114,Apr:116,May:90,JunMTD:42,JunFcst:74,JunPct:-17.8,JanMayPct:50.0,trend:'declining'},
+  {store:'Toyota of Coconut Creek',Jan:755,Feb:650,Mar:724,Apr:739,May:686,JunMTD:321,JunFcst:562,JunPct:-18.1,JanMayPct:-9.1,trend:'declining'},
+  {store:'Toyota of Tampa Bay',Jan:483,Feb:448,Mar:426,Apr:432,May:434,JunMTD:241,JunFcst:422,JunPct:-2.8,JanMayPct:-10.1,trend:'declining'},
+  {store:'Villages Subaru',Jan:234,Feb:202,Mar:249,Apr:220,May:206,JunMTD:120,JunFcst:210,JunPct:1.9,JanMayPct:-12.0,trend:'recovering'},
+  {store:'Volkswagen of Gainesville',Jan:47,Feb:65,Mar:63,Apr:55,May:36,JunMTD:23,JunFcst:40,JunPct:11.1,JanMayPct:-23.4,trend:'recovering'},
+  {store:'Volkswagen of North Tampa',Jan:179,Feb:121,Mar:163,Apr:170,May:120,JunMTD:53,JunFcst:93,JunPct:-22.5,JanMayPct:-33.0,trend:'declining'},
+  {store:'Volkswagen of South Miami',Jan:206,Feb:181,Mar:181,Apr:170,May:132,JunMTD:96,JunFcst:168,JunPct:27.3,JanMayPct:-35.9,trend:'recovering'},
+  {store:'Wesley Chapel Nissan',Jan:172,Feb:128,Mar:143,Apr:151,May:157,JunMTD:80,JunFcst:140,JunPct:-10.8,JanMayPct:-8.7,trend:'declining'},
+  {store:'Westshore Honda',Jan:443,Feb:433,Mar:450,Apr:429,May:406,JunMTD:175,JunFcst:306,JunPct:-24.6,JanMayPct:-8.4,trend:'declining'},
+  {store:'Westshore Mazda',Jan:271,Feb:219,Mar:232,Apr:253,May:286,JunMTD:184,JunFcst:322,JunPct:12.6,JanMayPct:5.5,trend:'recovering'}
+],
+  Used: [
+  {store:'Arrigo Alfa Romeo Maserati of Palm Beach',Jan:372,Feb:300,Mar:344,Apr:315,May:220,JunMTD:116,JunFcst:203,JunPct:-7.7,JanMayPct:-40.9,trend:'declining'},
+  {store:'Arrigo CDJR at Sawgrass',Jan:704,Feb:664,Mar:610,Apr:673,May:664,JunMTD:295,JunFcst:516,JunPct:-22.3,JanMayPct:-5.7,trend:'declining'},
+  {store:'Arrigo CDJR of Ft. Pierce',Jan:635,Feb:611,Mar:592,Apr:565,May:399,JunMTD:164,JunFcst:287,JunPct:-28.1,JanMayPct:-37.2,trend:'declining'},
+  {store:'Arrigo CDJR of West Palm Beach',Jan:1128,Feb:1159,Mar:1473,Apr:1074,May:787,JunMTD:294,JunFcst:514,JunPct:-34.7,JanMayPct:-30.2,trend:'declining'},
+  {store:'Arrigo Chrysler Dodge Jeep Ram Margate',Jan:470,Feb:392,Mar:564,Apr:460,May:398,JunMTD:189,JunFcst:331,JunPct:-16.8,JanMayPct:-15.3,trend:'declining'},
+  {store:'Audi Tampa',Jan:338,Feb:243,Mar:326,Apr:431,May:299,JunMTD:201,JunFcst:352,JunPct:17.7,JanMayPct:-11.5,trend:'recovering'},
+  {store:'BMW Mini of Wesley Chapel',Jan:533,Feb:426,Mar:414,Apr:477,May:352,JunMTD:133,JunFcst:233,JunPct:-33.8,JanMayPct:-34.0,trend:'declining'},
+  {store:'BMW of Coconut Creek',Jan:738,Feb:448,Mar:536,Apr:465,May:473,JunMTD:242,JunFcst:424,JunPct:-10.4,JanMayPct:-35.9,trend:'declining'},
+  {store:'BMW of Pompano Beach',Jan:481,Feb:472,Mar:491,Apr:625,May:454,JunMTD:260,JunFcst:455,JunPct:0.2,JanMayPct:-5.6,trend:'recovering'},
+  {store:'BMW of Sarasota',Jan:626,Feb:525,Mar:559,Apr:510,May:444,JunMTD:176,JunFcst:308,JunPct:-30.6,JanMayPct:-29.1,trend:'declining'},
+  {store:'BMW of South Miami and Mini of South Miami',Jan:822,Feb:714,Mar:855,Apr:718,May:481,JunMTD:273,JunFcst:478,JunPct:-0.6,JanMayPct:-41.5,trend:'declining'},
+  {store:'BMW of Tampa',Jan:607,Feb:647,Mar:619,Apr:626,May:680,JunMTD:279,JunFcst:488,JunPct:-28.2,JanMayPct:12.0,trend:'declining'},
+  {store:'Brandon Honda',Jan:847,Feb:783,Mar:865,Apr:628,May:565,JunMTD:265,JunFcst:464,JunPct:-17.9,JanMayPct:-33.3,trend:'declining'},
+  {store:'Brandon Hyundai',Jan:675,Feb:638,Mar:1162,Apr:1102,May:681,JunMTD:307,JunFcst:537,JunPct:-21.1,JanMayPct:0.9,trend:'declining'},
+  {store:'CDJR of Leesburg',Jan:464,Feb:487,Mar:492,Apr:497,May:570,JunMTD:226,JunFcst:396,JunPct:-30.5,JanMayPct:22.8,trend:'declining'},
+  {store:'CDJR of Tampa Bay',Jan:762,Feb:735,Mar:652,Apr:609,May:411,JunMTD:238,JunFcst:416,JunPct:1.2,JanMayPct:-46.1,trend:'recovering'},
+  {store:'Central Florida Chrysler Dodge Jeep RAM',Jan:499,Feb:572,Mar:543,Apr:577,May:561,JunMTD:235,JunFcst:411,JunPct:-26.7,JanMayPct:12.4,trend:'declining'},
+  {store:'Ford of Clermont',Jan:511,Feb:426,Mar:393,Apr:311,May:266,JunMTD:111,JunFcst:194,JunPct:-27.1,JanMayPct:-47.9,trend:'declining'},
+  {store:'Ford of Port Richey',Jan:413,Feb:397,Mar:505,Apr:431,May:393,JunMTD:144,JunFcst:252,JunPct:-35.9,JanMayPct:-4.8,trend:'declining'},
+  {store:'Gator Ford',Jan:279,Feb:278,Mar:376,Apr:294,May:250,JunMTD:110,JunFcst:192,JunPct:-23.2,JanMayPct:-10.4,trend:'declining'},
+  {store:'Hollywood Kia',Jan:931,Feb:685,Mar:1081,Apr:845,May:781,JunMTD:315,JunFcst:551,JunPct:-29.4,JanMayPct:-16.1,trend:'declining'},
+  {store:'Honda of Fort Myers',Jan:355,Feb:347,Mar:362,Apr:420,May:365,JunMTD:171,JunFcst:299,JunPct:-18.1,JanMayPct:2.8,trend:'declining'},
+  {store:'Honda of Gainesville',Jan:372,Feb:274,Mar:267,Apr:311,May:183,JunMTD:98,JunFcst:172,JunPct:-6.0,JanMayPct:-50.8,trend:'declining'},
+  {store:'Honda of Lake City',Jan:337,Feb:307,Mar:375,Apr:279,May:335,JunMTD:160,JunFcst:280,JunPct:-16.4,JanMayPct:-0.6,trend:'declining'},
+  {store:'Honda of Ocala',Jan:874,Feb:910,Mar:1055,Apr:735,May:539,JunMTD:287,JunFcst:502,JunPct:-6.9,JanMayPct:-38.3,trend:'declining'},
+  {store:'Honda of Port Richey',Jan:846,Feb:747,Mar:859,Apr:794,May:712,JunMTD:281,JunFcst:492,JunPct:-30.9,JanMayPct:-15.8,trend:'declining'},
+  {store:'Honda of Sarasota',Jan:343,Feb:290,Mar:378,Apr:332,May:354,JunMTD:166,JunFcst:290,JunPct:-18.1,JanMayPct:3.2,trend:'declining'},
+  {store:'Honda of South Miami',Jan:633,Feb:784,Mar:891,Apr:855,May:679,JunMTD:209,JunFcst:366,JunPct:-46.1,JanMayPct:7.3,trend:'declining'},
+  {store:'Hyundai of Fort Myers',Jan:716,Feb:675,Mar:986,Apr:947,May:929,JunMTD:338,JunFcst:592,JunPct:-36.3,JanMayPct:29.7,trend:'declining'},
+  {store:'Infiniti of South Miami',Jan:382,Feb:308,Mar:448,Apr:456,May:324,JunMTD:134,JunFcst:234,JunPct:-27.8,JanMayPct:-15.2,trend:'declining'},
+  {store:'Jaguar Land Rover Ocala',Jan:157,Feb:144,Mar:111,Apr:117,May:152,JunMTD:59,JunFcst:103,JunPct:-32.2,JanMayPct:-3.2,trend:'declining'},
+  {store:'Jaguar Land Rover Sarasota',Jan:400,Feb:390,Mar:517,Apr:380,May:359,JunMTD:151,JunFcst:264,JunPct:-26.5,JanMayPct:-10.2,trend:'declining'},
+  {store:'Jerry Ulm CDJR',Jan:1293,Feb:1056,Mar:1184,Apr:997,May:866,JunMTD:306,JunFcst:536,JunPct:-38.1,JanMayPct:-33.0,trend:'declining'},
+  {store:'Kendall Hyundai',Jan:614,Feb:547,Mar:923,Apr:786,May:717,JunMTD:310,JunFcst:542,JunPct:-24.4,JanMayPct:16.8,trend:'declining'},
+  {store:'Kia of Cape Coral',Jan:1272,Feb:1174,Mar:1451,Apr:1480,May:1161,JunMTD:429,JunFcst:751,JunPct:-35.3,JanMayPct:-8.7,trend:'declining'},
+  {store:'Kia of Clermont',Jan:402,Feb:407,Mar:489,Apr:413,May:331,JunMTD:149,JunFcst:261,JunPct:-21.1,JanMayPct:-17.7,trend:'declining'},
+  {store:'Kia of Leesburg',Jan:469,Feb:406,Mar:456,Apr:499,May:460,JunMTD:230,JunFcst:402,JunPct:-12.6,JanMayPct:-1.9,trend:'declining'},
+  {store:'Kia of Orange Park',Jan:271,Feb:295,Mar:329,Apr:307,May:190,JunMTD:105,JunFcst:184,JunPct:-3.2,JanMayPct:-29.9,trend:'declining'},
+  {store:'Kia of Port Charlotte',Jan:1238,Feb:1139,Mar:1115,Apr:1094,May:809,JunMTD:344,JunFcst:602,JunPct:-25.6,JanMayPct:-34.7,trend:'declining'},
+  {store:'Kia of Wesley Chapel',Jan:300,Feb:253,Mar:275,Apr:315,May:231,JunMTD:131,JunFcst:229,JunPct:-0.9,JanMayPct:-23.0,trend:'declining'},
+  {store:'Kia on Atlantic',Jan:465,Feb:568,Mar:535,Apr:408,May:325,JunMTD:143,JunFcst:250,JunPct:-23.1,JanMayPct:-30.1,trend:'declining'},
+  {store:'Lake City CDJR',Jan:323,Feb:316,Mar:329,Apr:299,May:195,JunMTD:131,JunFcst:229,JunPct:17.4,JanMayPct:-39.6,trend:'recovering'},
+  {store:'Lamborghini Sarasota',Jan:216,Feb:165,Mar:178,Apr:225,May:174,JunMTD:54,JunFcst:94,JunPct:-46.0,JanMayPct:-19.4,trend:'declining'},
+  {store:'Land Rover Tampa',Jan:391,Feb:340,Mar:277,Apr:329,May:331,JunMTD:159,JunFcst:278,JunPct:-16.0,JanMayPct:-15.3,trend:'declining'},
+  {store:'Lexus of Sarasota',Jan:789,Feb:709,Mar:785,Apr:769,May:638,JunMTD:291,JunFcst:509,JunPct:-20.2,JanMayPct:-19.1,trend:'declining'},
+  {store:'Maserati Tampa',Jan:216,Feb:249,Mar:226,Apr:224,May:138,JunMTD:67,JunFcst:117,JunPct:-15.2,JanMayPct:-36.1,trend:'declining'},
+  {store:'Mazda at the Avenues',Jan:495,Feb:355,Mar:480,Apr:490,May:394,JunMTD:189,JunFcst:331,JunPct:-16.0,JanMayPct:-20.4,trend:'declining'},
+  {store:'Mazda of Fort Myers',Jan:300,Feb:421,Mar:317,Apr:303,May:397,JunMTD:215,JunFcst:376,JunPct:-5.3,JanMayPct:32.3,trend:'declining'},
+  {store:'Mazda of Gainesville',Jan:277,Feb:345,Mar:242,Apr:185,May:136,JunMTD:61,JunFcst:107,JunPct:-21.3,JanMayPct:-50.9,trend:'declining'},
+  {store:'Mazda of St. Augustine',Jan:265,Feb:241,Mar:286,Apr:245,May:210,JunMTD:123,JunFcst:215,JunPct:2.4,JanMayPct:-20.8,trend:'recovering'},
+  {store:'Mercedes-Benz of Gainesville',Jan:283,Feb:211,Mar:197,Apr:218,May:163,JunMTD:75,JunFcst:131,JunPct:-19.6,JanMayPct:-42.4,trend:'declining'},
+  {store:'Morgan Chevrolet',Jan:425,Feb:424,Mar:340,Apr:346,May:253,JunMTD:114,JunFcst:200,JunPct:-20.9,JanMayPct:-40.5,trend:'declining'},
+  {store:'Naples Chrysler Dodge Jeep Ram',Jan:405,Feb:511,Mar:604,Apr:522,May:340,JunMTD:168,JunFcst:294,JunPct:-13.5,JanMayPct:-16.0,trend:'declining'},
+  {store:'Naples Mazda',Jan:403,Feb:304,Mar:431,Apr:313,May:276,JunMTD:156,JunFcst:273,JunPct:-1.1,JanMayPct:-31.5,trend:'declining'},
+  {store:'Nissan of Clearwater',Jan:482,Feb:397,Mar:474,Apr:395,May:273,JunMTD:136,JunFcst:238,JunPct:-12.8,JanMayPct:-43.4,trend:'declining'},
+  {store:'Nissan of Orange Park',Jan:436,Feb:377,Mar:392,Apr:364,May:281,JunMTD:117,JunFcst:205,JunPct:-27.0,JanMayPct:-35.6,trend:'declining'},
+  {store:'Porsche Tampa',Jan:191,Feb:229,Mar:253,Apr:238,May:253,JunMTD:111,JunFcst:194,JunPct:-23.3,JanMayPct:32.5,trend:'declining'},
+  {store:'Rountree Moore Chevrolet',Jan:301,Feb:269,Mar:311,Apr:278,May:200,JunMTD:97,JunFcst:170,JunPct:-15.0,JanMayPct:-33.6,trend:'declining'},
+  {store:'Rountree Moore Ford',Jan:275,Feb:234,Mar:220,Apr:254,May:178,JunMTD:81,JunFcst:142,JunPct:-20.2,JanMayPct:-35.3,trend:'declining'},
+  {store:'Rountree Moore Kia',Jan:400,Feb:267,Mar:291,Apr:374,May:219,JunMTD:127,JunFcst:222,JunPct:1.4,JanMayPct:-45.2,trend:'recovering'},
+  {store:'Rountree Moore Nissan',Jan:390,Feb:492,Mar:355,Apr:324,May:245,JunMTD:108,JunFcst:189,JunPct:-22.9,JanMayPct:-37.2,trend:'declining'},
+  {store:'Subaru of Fort Myers',Jan:281,Feb:256,Mar:288,Apr:218,May:260,JunMTD:116,JunFcst:203,JunPct:-21.9,JanMayPct:-7.5,trend:'declining'},
+  {store:'Subaru of North Tampa',Jan:308,Feb:227,Mar:286,Apr:317,May:238,JunMTD:94,JunFcst:164,JunPct:-31.1,JanMayPct:-22.7,trend:'declining'},
+  {store:'Sun Toyota',Jan:1523,Feb:1162,Mar:1365,Apr:1366,May:1218,JunMTD:591,JunFcst:1034,JunPct:-15.1,JanMayPct:-20.0,trend:'declining'},
+  {store:'Tallahassee CDJR FIAT',Jan:431,Feb:381,Mar:382,Apr:288,May:285,JunMTD:131,JunFcst:229,JunPct:-19.6,JanMayPct:-33.9,trend:'declining'},
+  {store:'Tampa Bay Motorcars',Jan:668,Feb:575,Mar:577,Apr:688,May:474,JunMTD:349,JunFcst:611,JunPct:28.9,JanMayPct:-29.0,trend:'recovering'},
+  {store:'Toyota of Coconut Creek',Jan:1278,Feb:1160,Mar:1323,Apr:1510,May:1363,JunMTD:567,JunFcst:992,JunPct:-27.2,JanMayPct:6.7,trend:'declining'},
+  {store:'Toyota of Tampa Bay',Jan:1070,Feb:869,Mar:1100,Apr:1025,May:764,JunMTD:374,JunFcst:654,JunPct:-14.4,JanMayPct:-28.6,trend:'declining'},
+  {store:'Villages Subaru',Jan:338,Feb:262,Mar:324,Apr:253,May:202,JunMTD:101,JunFcst:177,JunPct:-12.4,JanMayPct:-40.2,trend:'declining'},
+  {store:'Volkswagen of Gainesville',Jan:211,Feb:262,Mar:285,Apr:247,May:251,JunMTD:93,JunFcst:163,JunPct:-35.1,JanMayPct:19.0,trend:'declining'},
+  {store:'Volkswagen of North Tampa',Jan:634,Feb:606,Mar:558,Apr:590,May:294,JunMTD:163,JunFcst:285,JunPct:-3.1,JanMayPct:-53.6,trend:'declining'},
+  {store:'Volkswagen of South Miami',Jan:586,Feb:551,Mar:727,Apr:609,May:481,JunMTD:246,JunFcst:430,JunPct:-10.6,JanMayPct:-17.9,trend:'declining'},
+  {store:'Wesley Chapel Nissan',Jan:175,Feb:110,Mar:131,Apr:176,May:121,JunMTD:55,JunFcst:96,JunPct:-20.7,JanMayPct:-30.9,trend:'declining'},
+  {store:'Westshore Honda',Jan:695,Feb:651,Mar:769,Apr:621,May:506,JunMTD:205,JunFcst:359,JunPct:-29.1,JanMayPct:-27.2,trend:'declining'},
+  {store:'Westshore Mazda',Jan:406,Feb:512,Mar:497,Apr:465,May:442,JunMTD:200,JunFcst:350,JunPct:-20.8,JanMayPct:8.9,trend:'declining'}
+],
+};
+let storeData = storeDatasets['All'];
 
 // ── Chart defaults ────────────────────────────────────────────────
 Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
@@ -690,6 +879,29 @@ renderTable();
 
 function applyFilter(v){activeFilter=v; renderTable();}
 function applySearch(v){activeSearch=v; renderTable();}
+
+// ── Inventory switcher ────────────────────────────────────────────
+let activeInventory = 'All';
+
+function switchInventory(inv, btn) {
+  document.querySelectorAll('#invFilter .inv-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeInventory = inv;
+  storeData = storeDatasets[inv];
+  // Update subtitle
+  const subtitles = {
+    All: 'Amber column = June full-month forecast · sorted by Jan→May % change · All inventory combined',
+    New: 'Amber column = June full-month forecast · sorted by Jan→May % change · New car leads only',
+    Used: 'Amber column = June full-month forecast · sorted by Jan→May % change · Used car leads only',
+  };
+  document.querySelector('.card-sub.tbl-sub').textContent = subtitles[inv];
+  activeFilter = 'all';
+  activeSearch = '';
+  document.getElementById('filterSel').value = 'all';
+  document.getElementById('srchInput').value = '';
+  renderTable();
+}
+
 </script>
 </body>
 </html>
