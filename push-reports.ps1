@@ -50,7 +50,7 @@ $reportFiles = foreach ($ext in $EXTENSIONS) {
 
 $sorted = @($reportFiles | Sort-Object { $_.name } -Descending)
 $lines = $sorted | ForEach-Object { "  {`"name`": `"$($_.name)`", `"modified`": `"$($_.modified)`", `"size`": $($_.size)}" }
-"[$([Environment]::NewLine)$($lines -join ",`n")$([Environment]::NewLine)]" | Set-Content "$REPORTS_DEST\index.json" -Encoding UTF8
+"[$([Environment]::NewLine)$($lines -join ",`n")$([Environment]::NewLine)]" | Set-Content "$REPO_PATH\index.json" -Encoding UTF8
 
 Write-Host "Updated index.json ($($sorted.Count) reports total)" -ForegroundColor Cyan
 
@@ -68,3 +68,4 @@ if ([string]::IsNullOrWhiteSpace($status)) {
     Write-Host "URL: https://jmyoung6172.github.io/affinitiv-reports/" -ForegroundColor Cyan
 }
 Write-Host ""
+
