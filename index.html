@@ -384,13 +384,7 @@
     color: var(--text-muted);
   }
 
-  .viewer-content {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px 32px;
-    min-height: 400px;
-  }
+  .viewer-content { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0; min-height: 400px; overflow: hidden; }
 
   /* Markdown rendering */
   .md-body h1 { font-size: 22px; font-weight: 500; margin-bottom: 12px; }
@@ -727,4 +721,5 @@ function closeViewer(silent = false) {
 </script>
 </body>
 </html>
+
 
