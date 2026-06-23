@@ -668,7 +668,7 @@ async function openReport(report) {
 
   if (ext === 'html') {
     document.getElementById('viewer-content').innerHTML =
-      `<iframe class="report-iframe" src="${url}"></iframe>`;
+      `<iframe class="report-iframe" id="report-frame" src="${url}" onload="this.style.height=this.contentWindow.document.body.scrollHeight+'px'"></iframe>`;
 
   } else if (ext === 'md') {
     const res = await fetch(url);
@@ -721,6 +721,7 @@ function closeViewer(silent = false) {
 </script>
 </body>
 </html>
+
 
 
 
