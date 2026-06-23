@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subaru Zone — Conquest Campaigns | May 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
+
+  :root {
+    --subaru-blue: #003087;
+    --subaru-light: #005EB8;
+    --accent: #E8AA2A;
+    --good: #1a9e5c;
+    --warn: #e87b2a;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --border: #dde3ed;
+    --text: #1a2133;
+    --muted: #6b7a99;
+    --reach-bar: #ccd9f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--subaru-blue) 0%, var(--subaru-light) 100%);
+    padding: 32px 48px 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header-left h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .header-left h1 span { color: var(--accent); }
+  .header-left p {
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    margin-top: 6px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .header-right { text-align: right; }
+  .header-right .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 4px;
+  }
+
+  /* SUMMARY STATS */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-block {
+    background: var(--card);
+    padding: 20px 24px 18px;
+    text-align: center;
+  }
+  .stat-block .val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--subaru-blue);
+    line-height: 1;
+  }
+  .stat-block .val.accent { color: var(--accent); }
+  .stat-block .val.good { color: var(--good); }
+  .stat-block .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+  }
+  .stat-block .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* BENCHMARK BAR */
+  .benchmark-strip {
+    background: #001f5c;
+    padding: 12px 48px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .bench-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+  }
+  .bench-item .bench-label {
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .bench-compare {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bench-our {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--accent);
+  }
+  .bench-vs {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+  }
+  .bench-ind {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,255,255,0.25);
+  }
+  .bench-arrow {
+    font-size: 13px;
+    color: var(--good);
+  }
+  .bench-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  /* CONTENT AREA */
+  .content { padding: 28px 48px 48px; }
+
+  /* SECTION HEADS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+  .section-head:first-child { margin-top: 0; }
+  .section-head h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--subaru-blue);
+  }
+  .pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-blue { background: #e0eaff; color: var(--subaru-blue); }
+  .pill-gold { background: #fdf3d9; color: #a06c00; }
+
+  /* MAIN TABLE */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--subaru-blue);
+    color: rgba(255,255,255,0.85);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 11px 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  thead th.num { text-align: right; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f0f4ff; }
+  tbody td { padding: 10px 14px; font-size: 13px; white-space: nowrap; }
+  tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody td.store { font-weight: 600; color: var(--text); max-width: 240px; white-space: normal; }
+  .rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+    background: #e9edf5;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .rank-top { background: var(--subaru-blue); color: #fff; }
+  td .store-row { display: flex; align-items: center; }
+
+  /* REACH BAR */
+  .reach-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+  .reach-bar-bg { flex: 1; height: 6px; background: var(--reach-bar); border-radius: 3px; overflow: hidden; }
+  .reach-bar-fill { height: 100%; background: var(--subaru-light); border-radius: 3px; }
+  .reach-num { font-size: 12px; color: var(--text); font-variant-numeric: tabular-nums; min-width: 42px; text-align: right; }
+
+  /* CPM highlight */
+  .cpm-good { color: var(--good); font-weight: 600; }
+  .cpm-warn { color: var(--warn); font-weight: 600; }
+
+  /* FREQ BADGE */
+  .freq-badge { display: inline-block; padding: 2px 7px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .freq-hi { background: #fff3e0; color: #c05a00; }
+  .freq-ok { background: #e8f5e9; color: #1b7a3e; }
+  .freq-lo { background: #eef0f5; color: var(--muted); }
+
+  /* FLAGS TABLE */
+  .flags-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .flag-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .flag-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--subaru-blue);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .flag-card h3.gold { border-color: var(--accent); }
+  .flag-card h3.blue { border-color: var(--subaru-blue); }
+  .flag-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f2f7;
+    font-size: 13px;
+  }
+  .flag-item:last-child { border-bottom: none; }
+  .flag-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .flag-item strong { font-weight: 600; }
+  .flag-item .sub-note { color: var(--muted); font-size: 12px; display: block; margin-top: 1px; }
+
+  /* FOOTNOTE */
+  .footnote {
+    margin-top: 24px;
+    padding: 14px 20px;
+    background: #eef2fb;
+    border-left: 3px solid var(--subaru-blue);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .footnote strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Conquest <span>May 2026</span></h1>
+    <p>Subaru Zone · Paid Social Performance · May 1 – 31, 2026</p>
+  </div>
+  <div class="header-right">
+    <div class="badge">23 Subaru Stores</div>
+  </div>
+</div>
+
+<!-- BENCHMARK STRIP -->
+<div class="benchmark-strip">
+  <div class="bench-item">
+    <span class="bench-label">Avg CPM</span>
+    <div class="bench-compare">
+      <span class="bench-our">$33.65</span>
+      <span class="bench-vs">vs.</span>
+      <span class="bench-ind">$50–55</span>
+      <span class="bench-arrow">↓ 37% below industry</span>
+    </div>
+  </div>
+  <div class="bench-divider"></div>
+  <div class="bench-item">
+    <span class="bench-label">Avg CTR</span>
+    <div class="bench-compare">
+      <span class="bench-our">1.82%</span>
+      <span class="bench-vs">vs.</span>
+      <span class="bench-ind">0.90%</span>
+      <span class="bench-arrow">↑ 2× industry avg</span>
+    </div>
+  </div>
+  <div class="bench-divider"></div>
+  <div class="bench-item">
+    <span class="bench-label">Avg Frequency</span>
+    <div class="bench-compare">
+      <span class="bench-our">5.3x</span>
+      <span class="bench-vs">optimal</span>
+      <span class="bench-arrow">✓ 4–7x target range</span>
+    </div>
+  </div>
+  <div class="bench-divider"></div>
+  <div class="bench-item">
+    <span class="bench-label">Unique Reach</span>
+    <div class="bench-compare">
+      <span class="bench-our">52,843</span>
+      <span class="bench-vs">conquest-only</span>
+      <span class="bench-arrow">↑ net-new in-market shoppers</span>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY STATS -->
+<div class="summary">
+  <div class="stat-block">
+    <div class="val">$10,741</div>
+    <div class="label">Total Spend</div>
+    <div class="sub">~$467 avg/store</div>
+  </div>
+  <div class="stat-block">
+    <div class="val">319,162</div>
+    <div class="label">Total Impressions</div>
+    <div class="sub">~13,877 avg/store</div>
+  </div>
+  <div class="stat-block">
+    <div class="val accent">52,843</div>
+    <div class="label">Total Unique Reach</div>
+    <div class="sub">~2,297 avg/store</div>
+  </div>
+  <div class="stat-block">
+    <div class="val">5,811</div>
+    <div class="label">Total Clicks</div>
+    <div class="sub">~253 avg/store</div>
+  </div>
+  <div class="stat-block">
+    <div class="val good">$33.65</div>
+    <div class="label">Portfolio Avg CPM</div>
+    <div class="sub">37% below $50–55 benchmark</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- MAIN PERFORMANCE TABLE -->
+  <div class="section-head">
+    <h2>Store-by-Store Conquest Performance</h2>
+    <span class="pill pill-blue">May26_Conquest_Leads</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px;">#</th>
+          <th>Store</th>
+          <th class="num">Spend</th>
+          <th class="num">Impressions</th>
+          <th>Unique Reach</th>
+          <th class="num">Clicks</th>
+          <th class="num">CTR</th>
+          <th class="num">CPM</th>
+          <th class="num">Freq.</th>
+        </tr>
+      </thead>
+      <tbody id="store-rows"></tbody>
+    </table>
+  </div>
+
+  <!-- CALLOUT GRID -->
+  <div class="section-head" style="margin-top:36px;">
+    <h2>Key Talking Points</h2>
+    <span class="pill pill-gold">For Zone Marketing Manager Review</span>
+  </div>
+  <div class="flags-grid">
+
+    <div class="flag-card">
+      <h3 class="blue">✅ What's Working</h3>
+      <div class="flag-item">
+        <span class="flag-icon">📍</span>
+        <div>
+          <strong>CPM efficiency well below industry benchmarks</strong>
+          <span class="sub-note">Zone avg CPM of $33.65 vs. the $50–55 automotive conquest benchmark — delivering ~37% more impressions per dollar spent.</span>
+        </div>
+      </div>
+      <div class="flag-item">
+        <span class="flag-icon">🖱️</span>
+        <div>
+          <strong>CTR running 2× the automotive industry average</strong>
+          <span class="sub-note">Zone avg CTR of 1.82% vs. the 0.90% auto industry norm — a strong signal of creative relevance and audience quality.</span>
+        </div>
+      </div>
+      <div class="flag-item">
+        <span class="flag-icon">🎯</span>
+        <div>
+          <strong>52,800+ net-new unique conquested shoppers</strong>
+          <span class="sub-note">Pure conquest audience — in-market Subaru intenders reached outside the existing owner/service base.</span>
+        </div>
+      </div>
+      <div class="flag-item">
+        <span class="flag-icon">🔁</span>
+        <div>
+          <strong>Frequency dialed in at optimal 5.3x zone average</strong>
+          <span class="sub-note">Industry best practice targets 4–7x for conquest. The zone is right in the sweet spot — enough saturation without wasting impressions.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flag-card">
+      <h3 class="gold">⚠️ Items to Address</h3>
+      <div class="flag-item">
+        <span class="flag-icon">📉</span>
+        <div>
+          <strong>5 stores with partial-month spend</strong>
+          <span class="sub-note">Daytona ($334), Sport South ($339), Conley ($384), Hanania ($264), and Sarasota ($215) all underpaced. Budget timing or approvals worth confirming for June.</span>
+        </div>
+      </div>
+      <div class="flag-item">
+        <span class="flag-icon">💡</span>
+        <div>
+          <strong>Opportunity to scale top performers</strong>
+          <span class="sub-note">South Tampa ($24.51 CPM), Valdosta ($28.39), and Melbourne ($28.99) are delivering exceptional efficiency — strong candidates for increased investment in June.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flag-card">
+      <h3 class="blue">🏆 Top Performers — Impressions</h3>
+      <div class="flag-item"><span class="flag-icon">1️⃣</span><div><strong>Subaru South Tampa</strong><span class="sub-note">17,682 impr · 2,265 reach · $24.51 CPM</span></div></div>
+      <div class="flag-item"><span class="flag-icon">2️⃣</span><div><strong>O'Steen Subaru of Valdosta</strong><span class="sub-note">17,425 impr · 2,728 reach · $28.39 CPM</span></div></div>
+      <div class="flag-item"><span class="flag-icon">3️⃣</span><div><strong>Subaru of Melbourne</strong><span class="sub-note">17,119 impr · 2,760 reach · $28.99 CPM</span></div></div>
+    </div>
+
+    <div class="flag-card">
+      <h3 class="blue">🎯 Best Efficiency — Lowest CPM</h3>
+      <div class="flag-item"><span class="flag-icon">🥇</span><div><strong>Subaru South Tampa</strong><span class="sub-note">$24.51 CPM — top impressions and lowest cost in zone</span></div></div>
+      <div class="flag-item"><span class="flag-icon">🥈</span><div><strong>Anderson Subaru</strong><span class="sub-note">$31.36 CPM · Highest click volume (432 clicks) in zone</span></div></div>
+      <div class="flag-item"><span class="flag-icon">🥉</span><div><strong>Subaru Lakeland</strong><span class="sub-note">$38.40 CPM · Highest CTR in zone at 3.49%</span></div></div>
+    </div>
+
+  </div>
+
+  <div class="footnote">
+    <strong>Data source:</strong> Meta Ads Manager — May 1–31, 2026 · Campaign: <em>May26_Conquest_Leads</em> · 23 active Subaru zone accounts.
+    Industry benchmarks sourced from Meta automotive vertical averages (CPM, CTR) and standard media planning guidelines (frequency).
+  </div>
+
+</div>
+
+<script>
+const stores = [
+  { store: "Subaru South Tampa", spend: 445.62, impr: 17682, reach: 2265, clicks: 278 },
+  { store: "O'Steen Subaru of Valdosta", spend: 494.70, impr: 17425, reach: 2728, clicks: 378 },
+  { store: "Subaru of Melbourne", spend: 496.35, impr: 17119, reach: 2760, clicks: 275 },
+  { store: "Crews Subaru of Charleston", spend: 499.99, impr: 15977, reach: 3348, clicks: 279 },
+  { store: "Anderson Subaru", spend: 499.76, impr: 15938, reach: 2685, clicks: 432 },
+  { store: "Subaru of Pembroke Pines", spend: 495.99, impr: 15292, reach: 2787, clicks: 218 },
+  { store: "Coconut Creek Subaru", spend: 491.42, impr: 14394, reach: 2582, clicks: 258 },
+  { store: "Subaru of North Miami", spend: 500.00, impr: 13959, reach: 2486, clicks: 258 },
+  { store: "Villages Subaru", spend: 499.86, impr: 13523, reach: 2212, clicks: 214 },
+  { store: "Sport Subaru", spend: 498.61, impr: 13405, reach: 2527, clicks: 273 },
+  { store: "Subaru Lakeland", spend: 499.30, impr: 13005, reach: 2144, clicks: 454 },
+  { store: "Subaru of North Tampa", spend: 480.10, impr: 12875, reach: 2282, clicks: 252 },
+  { store: "Subaru of Wesley Chapel", spend: 490.41, impr: 12820, reach: 2415, clicks: 287 },
+  { store: "Fitzgeralds Countryside Subaru", spend: 485.45, impr: 12503, reach: 2337, clicks: 267 },
+  { store: "Bert Smith Subaru", spend: 487.07, impr: 12157, reach: 2358, clicks: 274 },
+  { store: "Subaru North Orlando", spend: 497.99, impr: 11248, reach: 2293, clicks: 205 },
+  { store: "Subaru of Daytona", spend: 333.94, impr: 11015, reach: 2006, clicks: 246 },
+  { store: "Subaru of Jacksonville", spend: 499.31, impr: 10782, reach: 2157, clicks: 219 },
+  { store: "Schumacher Subaru (W. Palm)", spend: 499.11, impr: 10678, reach: 2227, clicks: 250 },
+  { store: "Conley Subaru", spend: 384.20, impr: 10309, reach: 2051, clicks: 194 },
+  { store: "Schumacher Subaru of Delray", spend: 499.10, impr: 9747, reach: 1857, clicks: 247 },
+  { store: "Sport Subaru South", spend: 339.27, impr: 8875, reach: 1926, clicks: 159 },
+  { store: "Hanania Subaru", spend: 264.36, impr: 8326, reach: 1779, clicks: 95 },
+  { store: "Sarasota Subaru", spend: 214.50, impr: 6125, reach: 1543, clicks: 119 },
+];
+
+const maxReach = Math.max(...stores.map(s => s.reach));
+const tbody = document.getElementById('store-rows');
+
+stores.forEach((s, i) => {
+  const ctr = (s.clicks / s.impr * 100).toFixed(2);
+  const cpm = (s.spend / s.impr * 1000).toFixed(2);
+  const freq = (s.impr / s.reach).toFixed(2);
+  const cpmVal = parseFloat(cpm);
+  const freqVal = parseFloat(freq);
+  const cpmClass = cpmVal < 30 ? 'cpm-good' : cpmVal > 45 ? 'cpm-warn' : '';
+  const freqClass = freqVal > 8 ? 'freq-hi' : freqVal < 4 ? 'freq-lo' : 'freq-ok';
+  const rankClass = i < 3 ? 'rank-top' : '';
+  const reachPct = (s.reach / maxReach * 100).toFixed(1);
+
+  tbody.innerHTML += `
+    <tr>
+      <td style="padding-left:12px;"><span class="rank-num ${rankClass}">${i+1}</span></td>
+      <td class="store"><div class="store-row">${s.store}</div></td>
+      <td class="num">$${s.spend.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="num">${s.impr.toLocaleString()}</td>
+      <td>
+        <div class="reach-bar-wrap">
+          <div class="reach-bar-bg"><div class="reach-bar-fill" style="width:${reachPct}%"></div></div>
+          <span class="reach-num">${s.reach.toLocaleString()}</span>
+        </div>
+      </td>
+      <td class="num">${s.clicks.toLocaleString()}</td>
+      <td class="num">${ctr}%</td>
+      <td class="num ${cpmClass}">$${cpm}</td>
+      <td class="num"><span class="freq-badge ${freqClass}">${freq}x</span></td>
+    </tr>
+  `;
+});
+</script>
+</body>
+</html>
