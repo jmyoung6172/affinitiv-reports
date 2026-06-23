@@ -384,7 +384,7 @@
     color: var(--text-muted);
   }
 
-  .viewer-content { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0; min-height: 400px; overflow: hidden; }
+  .viewer-content { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0; min-height: 400px; overflow: visible; }
 
   /* Markdown rendering */
   .md-body h1 { font-size: 22px; font-weight: 500; margin-bottom: 12px; }
@@ -668,7 +668,7 @@ async function openReport(report) {
 
   if (ext === 'html') {
     document.getElementById('viewer-content').innerHTML =
-      `<iframe class="report-iframe" id="report-frame" src="${url}" onload="this.style.height=this.contentWindow.document.body.scrollHeight+'px'"></iframe>`;
+      `<iframe class="report-iframe" id="report-frame" src="${url}" onload="var f=this; setTimeout(function(){ f.style.height=f.contentWindow.document.documentElement.scrollHeight+'px'; },500)"></iframe>`;
 
   } else if (ext === 'md') {
     const res = await fetch(url);
@@ -721,6 +721,7 @@ function closeViewer(silent = false) {
 </script>
 </body>
 </html>
+
 
 
 
