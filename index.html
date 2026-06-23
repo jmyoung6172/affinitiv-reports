@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -408,12 +408,7 @@
   .md-body pre code { background: none; padding: 0; }
 
   /* HTML iframe */
-  .report-iframe {
-    width: 100%;
-    min-height: 700px;
-    border: none;
-    border-radius: 8px;
-  }
+  .report-iframe { width: 100%; height: 100vh; border: none; display: block; }
 
   /* XLSX table */
   .xlsx-tabs {
@@ -508,7 +503,7 @@
             <div class="list-title" id="list-title">All Reports</div>
             <div class="list-subtitle" id="list-subtitle"></div>
           </div>
-          <input class="search-box" type="text" placeholder="Search reports…" oninput="searchReports(this.value)" />
+          <input class="search-box" type="text" placeholder="Search reportsâ€¦" oninput="searchReports(this.value)" />
         </div>
         <div class="report-grid" id="report-grid"></div>
       </div>
@@ -516,7 +511,7 @@
       <!-- VIEWER -->
       <div id="viewer">
         <div class="viewer-header">
-          <button class="back-btn" onclick="closeViewer()">← Back</button>
+          <button class="back-btn" onclick="closeViewer()">â† Back</button>
           <div>
             <div class="viewer-title" id="viewer-title"></div>
             <div class="viewer-meta" id="viewer-meta"></div>
@@ -647,7 +642,7 @@ function renderList() {
 
   const grid = document.getElementById('report-grid');
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div>No reports found</div>';
+    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">ðŸ“„</div>No reports found</div>';
     return;
   }
 
@@ -672,7 +667,7 @@ async function openReport(report) {
   document.getElementById('viewer').style.display = 'block';
   document.getElementById('viewer-title').textContent = report.name;
   document.getElementById('viewer-meta').textContent = formatDate(report.name) || '';
-  document.getElementById('viewer-content').innerHTML = '<div style="padding:40px;text-align:center;color:#999">Loading…</div>';
+  document.getElementById('viewer-content').innerHTML = '<div style="padding:40px;text-align:center;color:#999">Loadingâ€¦</div>';
 
   const ext = getExt(report.name);
   const url = `reports/${report.name}`;
@@ -695,7 +690,7 @@ async function openReport(report) {
 
   } else {
     document.getElementById('viewer-content').innerHTML =
-      `<div class="empty-state"><div class="empty-state-icon">📎</div>
+      `<div class="empty-state"><div class="empty-state-icon">ðŸ“Ž</div>
        Preview not available for .${ext} files.<br><br>
        <a href="${url}" download style="color:var(--accent);font-weight:500">Download file</a></div>`;
   }
@@ -732,3 +727,4 @@ function closeViewer(silent = false) {
 </script>
 </body>
 </html>
+
