@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Conquest July 2026 — Subaru Zone Google Ads Performance</title>
+<style>
+  :root{
+    --navy:#0b2f6b;
+    --navy-dark:#081f4a;
+    --orange:#f5a623;
+    --blue:#1a56c4;
+    --blue-light:#e8f0fd;
+    --green:#1a8a4a;
+    --red:#c0362c;
+    --amber:#c98a1c;
+    --text:#1e2430;
+    --muted:#6b7385;
+    --border:#e3e6ec;
+    --row-alt:#f7f9fc;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--text);
+    background:#ffffff;
+  }
+
+  /* ---------- HEADER ---------- */
+  .banner{
+    background:linear-gradient(135deg,var(--navy),var(--navy-dark));
+    color:#fff;
+    padding:22px 40px 18px;
+    position:relative;
+  }
+  .banner-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .banner h1{
+    margin:0;
+    font-size:30px;
+    font-weight:900;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .banner h1 span{color:var(--orange);}
+  .banner .subtitle{
+    font-size:12.5px;
+    color:#c7d3ee;
+    margin-top:4px;
+    letter-spacing:0.3px;
+  }
+  .store-badge{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.25);
+    border-radius:5px;
+    padding:7px 14px;
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.4px;
+    white-space:nowrap;
+  }
+  .mini-stats{
+    display:flex;
+    gap:34px;
+    margin-top:16px;
+    flex-wrap:wrap;
+    font-size:11px;
+    color:#b9c6e6;
+  }
+  .mini-stats b{color:#fff;}
+  .mini-stats .accent{color:var(--orange); font-weight:700;}
+  .mini-stats .g{color:#7fd99a; font-weight:700;}
+
+  /* ---------- KPI STRIP ---------- */
+  .kpi-strip{
+    display:flex;
+    border-bottom:1px solid var(--border);
+  }
+  .kpi{
+    flex:1;
+    text-align:center;
+    padding:20px 10px;
+    border-right:1px solid var(--border);
+  }
+  .kpi:last-child{border-right:none;}
+  .kpi .value{
+    font-size:27px;
+    font-weight:800;
+    color:var(--navy);
+  }
+  .kpi .value.orange{color:var(--orange);}
+  .kpi .value.green{color:var(--green);}
+  .kpi .label{
+    font-size:10.5px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-top:4px;
+  }
+  .kpi .sub{
+    font-size:10px;
+    color:#9aa2b1;
+    margin-top:2px;
+  }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:18px 40px 8px;
+  }
+  .section-header h2{
+    margin:0;
+    font-size:13.5px;
+    font-weight:800;
+    color:var(--navy);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .section-header .tag{
+    background:var(--blue-light);
+    color:var(--blue);
+    font-size:10px;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:4px;
+    letter-spacing:0.3px;
+  }
+
+  /* ---------- TABLE ---------- */
+  .table-wrap{padding:0 40px 10px;}
+  table{width:100%; border-collapse:collapse; font-size:12px;}
+  thead th{
+    background:var(--navy);
+    color:#dbe4f7;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    font-weight:700;
+    padding:8px 10px;
+    text-align:left;
+  }
+  thead th.num{text-align:right;}
+  tbody td{
+    padding:7px 10px;
+    border-bottom:1px solid var(--border);
+    vertical-align:middle;
+  }
+  tbody tr:nth-child(odd){background:var(--row-alt);}
+  td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  td.rank{
+    width:22px;
+    text-align:center;
+  }
+  .rank-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:var(--blue);
+    color:#fff;
+    font-size:9.5px;
+    font-weight:700;
+  }
+  td.store{font-weight:700; color:var(--navy);}
+  .bar-cell{width:220px;}
+  .bar-track{
+    background:#e7ecf4;
+    border-radius:3px;
+    height:8px;
+    width:100%;
+    position:relative;
+  }
+  .bar-fill{
+    background:var(--blue);
+    height:8px;
+    border-radius:3px;
+  }
+  .bar-label{font-size:10px; color:var(--muted); margin-left:6px;}
+  .flag-high{color:var(--red); font-weight:700;}
+  .flag-low{color:var(--green); font-weight:700;}
+  .flag-mid{color:var(--amber); font-weight:700;}
+
+  /* ---------- TALKING POINTS ---------- */
+  .tp-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    padding:6px 40px 30px;
+  }
+  .tp-grid.single{grid-template-columns:1fr;}
+  .tp-panel{
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:16px 18px;
+  }
+  .tp-panel h3{
+    margin:0 0 10px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .tp-panel.working h3{color:var(--green);}
+  .tp-panel.address h3{color:var(--amber);}
+  .tp-item{
+    display:flex;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .tp-item:last-child{border-bottom:none;}
+  .tp-icon{font-size:14px; margin-top:1px;}
+  .tp-text b{display:block; font-size:12.5px; color:var(--text); margin-bottom:2px;}
+  .tp-text span{font-size:11.5px; color:var(--muted); line-height:1.4;}
+
+  .leader-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    padding:0 40px 30px;
+  }
+  .leader-panel{
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:16px 18px;
+  }
+  .leader-panel h3{
+    margin:0 0 10px;
+    font-size:12px;
+    font-weight:800;
+    color:var(--navy);
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+  }
+  .leader-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:7px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .leader-row:last-child{border-bottom:none;}
+  .leader-rank{
+    width:20px; height:20px;
+    border-radius:50%;
+    background:var(--blue-light);
+    color:var(--blue);
+    font-size:10.5px;
+    font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .leader-text b{font-size:12.5px; color:var(--text);}
+  .leader-text span{font-size:11px; color:var(--muted); display:block;}
+
+  footer{
+    padding:14px 40px 30px;
+    border-top:1px solid var(--border);
+    font-size:10.5px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-top">
+    <div>
+      <h1>CONQUEST <span>JULY 2026</span></h1>
+      <div class="subtitle">SUBARU ZONE &middot; GOOGLE ADS PERFORMANCE &middot; JULY 1&ndash;28, 2026 (MTD)</div>
+    </div>
+    <div class="store-badge">23 SUBARU STORES</div>
+  </div>
+  <div class="mini-stats">
+    <div>AVG CPC <b class="accent" id="statCPC"></b> &middot; portfolio blended, cost &divide; clicks</div>
+    <div>AVG CTR <b class="g" id="statCTR"></b> &middot; clicks &divide; impressions, portfolio-wide</div>
+    <div>CAMPAIGN <b id="statCampaign">July26_Conquest_Leads</b></div>
+  </div>
+</div>
+
+<div class="kpi-strip" id="kpiStrip"></div>
+
+<div class="section-header">
+  <h2>Store-by-Store Conquest Performance</h2>
+  <span class="tag">JULY26_CONQUEST_LEADS</span>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="rank">#</th>
+        <th>Store</th>
+        <th class="num">Spend</th>
+        <th class="num">Impressions</th>
+        <th class="bar-cell">Share of Impressions</th>
+        <th class="num">Clicks</th>
+        <th class="num">CTR</th>
+        <th class="num">CPC</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="section-header">
+  <h2>Key Talking Points</h2>
+  <span class="tag">FOR ZONE MARKETING MANAGER REVIEW</span>
+</div>
+<div class="tp-grid single">
+  <div class="tp-panel working">
+    <h3>✅ What's Working</h3>
+    <div id="workingList"></div>
+  </div>
+</div>
+
+<div class="leader-grid">
+  <div class="leader-panel">
+    <h3>Top Performers &mdash; Impressions</h3>
+    <div id="topImpressions"></div>
+  </div>
+  <div class="leader-panel">
+    <h3>Best Efficiency &mdash; Lowest CPC</h3>
+    <div id="bestCPC"></div>
+  </div>
+</div>
+
+<footer>
+  Data source: Google Ads &mdash; July MTD Conquest export (July 1&ndash;28, 2026), campaign <i>July26_Conquest_Leads</i>. Filtered to the 23 Affinitiv-managed Subaru zone accounts. CPC and CTR recalculated as Cost &divide; Clicks and Clicks &divide; Impressions for consistency. All comparisons are relative to this portfolio's own MTD averages &mdash; no external benchmark data was available for this export.
+</footer>
+
+<script>
+const data = [{"account": "Anderson Subaru 040589", "cost": 464.4400024, "clicks": 222, "impressions": 12562, "cpc_calc": 2.09, "cpm": 36.971819964973726, "ctr_calc": 0.017672345167966886}, {"account": "Bert Smith Subaru 040428", "cost": 495.3200073, "clicks": 258, "impressions": 4554, "cpc_calc": 1.92, "cpm": 108.76592167325427, "ctr_calc": 0.05665349143610013}, {"account": "Coconut Creek Subaru - 401014", "cost": 421.9200134, "clicks": 163, "impressions": 10977, "cpc_calc": 2.59, "cpm": 38.43673256809693, "ctr_calc": 0.01484923020861802}, {"account": "Conley Subaru 040475", "cost": 442.6099854, "clicks": 214, "impressions": 12187, "cpc_calc": 2.07, "cpm": 36.31820672848117, "ctr_calc": 0.017559694756707968}, {"account": "Crews Subaru of Charleston - 040730", "cost": 236.1799927, "clicks": 65, "impressions": 3573, "cpc_calc": 3.63, "cpm": 66.10131337811363, "ctr_calc": 0.018191995521970334}, {"account": "Fitzgeralds Countryside Subaru - 040446", "cost": 472.5100098, "clicks": 287, "impressions": 13707, "cpc_calc": 1.65, "cpm": 34.4721682206172, "ctr_calc": 0.020938206755672283}, {"account": "Hanania Subaru 401158", "cost": 406.6099854, "clicks": 160, "impressions": 11255, "cpc_calc": 2.54, "cpm": 36.127053345179924, "ctr_calc": 0.014215904042647711}, {"account": "Sarasota Subaru - 404231", "cost": 302.9599915, "clicks": 211, "impressions": 5551, "cpc_calc": 1.44, "cpm": 54.57755206269141, "ctr_calc": 0.03801116915871014}, {"account": "Schumacher Subaru - 040644", "cost": 468.0799866, "clicks": 163, "impressions": 10861, "cpc_calc": 2.87, "cpm": 43.097319454930485, "ctr_calc": 0.015007826167019612}, {"account": "Schumacher Subaru of Delray - 401846", "cost": 464.7099915, "clicks": 190, "impressions": 10876, "cpc_calc": 2.45, "cpm": 42.72802422765723, "ctr_calc": 0.01746965796248621}, {"account": "Sport Subaru - 400058", "cost": 319.480011, "clicks": 176, "impressions": 9325, "cpc_calc": 1.82, "cpm": 34.2605909919571, "ctr_calc": 0.018873994638069706}, {"account": "Sport Subaru South - 402444", "cost": 301.480011, "clicks": 75, "impressions": 5784, "cpc_calc": 4.02, "cpm": 52.12310010373444, "ctr_calc": 0.012966804979253113}, {"account": "Subaru Lakeland 404295", "cost": 466.0700073, "clicks": 204, "impressions": 10214, "cpc_calc": 2.28, "cpm": 45.63050786175837, "ctr_calc": 0.0199725866457803}, {"account": "Subaru Of Fort Myers 403949", "cost": 465.269989, "clicks": 138, "impressions": 10073, "cpc_calc": 3.37, "cpm": 46.18981326317879, "ctr_calc": 0.013699990072470962}, {"account": "Subaru Of Pembroke Pines 400145", "cost": 255.0500031, "clicks": 82, "impressions": 7348, "cpc_calc": 3.11, "cpm": 34.71012562602069, "ctr_calc": 0.01115949918345128}, {"account": "Subaru South Tampa - 403621", "cost": 201.9400024, "clicks": 86, "impressions": 5080, "cpc_calc": 2.35, "cpm": 39.75196897637795, "ctr_calc": 0.016929133858267716}, {"account": "Subaru of Daytona- 400071", "cost": 466.6300049, "clicks": 787, "impressions": 32375, "cpc_calc": 0.59, "cpm": 14.413282004633205, "ctr_calc": 0.024308880308880308}, {"account": "Subaru of Jacksonville 405798", "cost": 398.4400024, "clicks": 130, "impressions": 7614, "cpc_calc": 3.06, "cpm": 52.32991888626215, "ctr_calc": 0.017073811400052534}, {"account": "Subaru of Melbourne - 401635", "cost": 461.0700073, "clicks": 140, "impressions": 11606, "cpc_calc": 3.29, "cpm": 39.72686604342581, "ctr_calc": 0.012062726176115802}, {"account": "Subaru of North Miami 404658", "cost": 640.4699707, "clicks": 252, "impressions": 17206, "cpc_calc": 2.54, "cpm": 37.22364121236778, "ctr_calc": 0.014646053702196907}, {"account": "Subaru of North Tampa", "cost": 405.5299988, "clicks": 210, "impressions": 11087, "cpc_calc": 1.93, "cpm": 36.57707213854063, "ctr_calc": 0.018941102191756112}, {"account": "Subaru of Wesley Chapel - 404822", "cost": 234.0700073, "clicks": 83, "impressions": 4132, "cpc_calc": 2.82, "cpm": 56.64811406098741, "ctr_calc": 0.020087124878993223}, {"account": "Villages Subaru 404914", "cost": 476.3099976, "clicks": 135, "impressions": 9044, "cpc_calc": 3.53, "cpm": 52.66585555064131, "ctr_calc": 0.014927023440955329}];
+
+const n = data.length;
+const totalCost = data.reduce((s,d)=>s+d.cost,0);
+const totalClicks = data.reduce((s,d)=>s+d.clicks,0);
+const totalImpr = data.reduce((s,d)=>s+d.impressions,0);
+const portCPC = totalCost/totalClicks;
+const portCTR = totalClicks/totalImpr;
+const avgSpend = totalCost/n;
+
+document.getElementById('statCPC').textContent = '$'+portCPC.toFixed(2);
+document.getElementById('statCTR').textContent = (portCTR*100).toFixed(2)+'%';
+
+// ---------- KPI strip ----------
+const kpis = [
+  {value:'$'+totalCost.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}), label:'Total Spend', sub:'~$'+Math.round(avgSpend)+' avg/store', cls:''},
+  {value: totalImpr.toLocaleString(), label:'Total Impressions', sub:'~'+Math.round(totalImpr/n).toLocaleString()+' avg/store', cls:''},
+  {value: totalClicks.toLocaleString(), label:'Total Clicks', sub:'~'+Math.round(totalClicks/n)+' avg/store', cls:'orange'},
+  {value:'$'+portCPC.toFixed(2), label:'Portfolio Avg CPC', sub:'blended, cost \u00f7 clicks', cls:'green'},
+  {value:(portCTR*100).toFixed(2)+'%', label:'Portfolio Avg CTR', sub:'clicks \u00f7 impressions', cls:''},
+];
+document.getElementById('kpiStrip').innerHTML = kpis.map(k=>`
+  <div class="kpi">
+    <div class="value ${k.cls}">${k.value}</div>
+    <div class="label">${k.label}</div>
+    <div class="sub">${k.sub}</div>
+  </div>`).join('');
+
+// ---------- ranked table (by impressions desc) ----------
+const byImpr = [...data].sort((a,b)=>b.impressions-a.impressions);
+const maxImpr = byImpr[0].impressions;
+
+function cpcFlag(v){
+  if(v <= portCPC*0.75) return 'flag-low';
+  if(v >= portCPC*1.4) return 'flag-high';
+  return '';
+}
+function ctrFlag(v){
+  if(v >= portCTR*1.3) return 'flag-low';
+  if(v <= portCTR*0.7) return 'flag-high';
+  return '';
+}
+
+document.getElementById('tableBody').innerHTML = byImpr.map((d,i)=>{
+  const pct = (d.impressions/maxImpr*100).toFixed(0);
+  return `<tr>
+    <td class="rank"><span class="rank-badge">${i+1}</span></td>
+    <td class="store">${d.account}</td>
+    <td class="num">$${d.cost.toFixed(2)}</td>
+    <td class="num">${d.impressions.toLocaleString()}</td>
+    <td class="bar-cell">
+      <div style="display:flex;align-items:center;">
+        <div class="bar-track" style="flex:1;"><div class="bar-fill" style="width:${pct}%;"></div></div>
+        <span class="bar-label">${pct}%</span>
+      </div>
+    </td>
+    <td class="num">${d.clicks.toLocaleString()}</td>
+    <td class="num ${ctrFlag(d.ctr_calc)}">${(d.ctr_calc*100).toFixed(2)}%</td>
+    <td class="num ${cpcFlag(d.cpc_calc)}">$${d.cpc_calc.toFixed(2)}</td>
+  </tr>`;
+}).join('');
+
+// ---------- talking points (data-derived) ----------
+const byCTRdesc = [...data].sort((a,b)=>b.ctr_calc-a.ctr_calc);
+const byCPCasc = [...data].sort((a,b)=>a.cpc_calc-b.cpc_calc);
+const byCPCdesc = [...data].sort((a,b)=>b.cpc_calc-a.cpc_calc);
+const byImprDesc = [...data].sort((a,b)=>b.impressions-a.impressions);
+const lowSpendStores = data.filter(d=>d.cost < avgSpend*0.65).sort((a,b)=>a.cost-b.cost);
+const highCPCStores = data.filter(d=>d.cpc_calc >= portCPC*1.4);
+
+const working = [
+  {icon:'🎯', title:`${byCTRdesc[0].account} leads portfolio CTR at ${(byCTRdesc[0].ctr_calc*100).toFixed(2)}%`, text:`Roughly 3x the portfolio average of ${(portCTR*100).toFixed(2)}% &mdash; strong signal on creative/audience relevance worth templating elsewhere.`},
+  {icon:'💰', title:`${byImprDesc[0].account} drives scale at the lowest CPC in the zone`, text:`${byImprDesc[0].impressions.toLocaleString()} impressions and ${byImprDesc[0].clicks} clicks at just $${byImprDesc[0].cpc_calc.toFixed(2)} CPC &mdash; nearly 3x the portfolio's average impression volume per store.`},
+  {icon:'📈', title:`${byCPCasc[0].account} and ${byCPCasc[1].account} post the most efficient CPCs`, text:`At $${byCPCasc[0].cpc_calc.toFixed(2)} and $${byCPCasc[1].cpc_calc.toFixed(2)} respectively, both are well under the $${portCPC.toFixed(2)} portfolio blended CPC.`},
+  {icon:'✅', title:`${n} of ${n} stores reporting active spend`, text:`Full zone coverage for the July26_Conquest_Leads campaign through day 28 of the month.`},
+];
+document.getElementById('workingList').innerHTML = working.map(w=>`
+  <div class="tp-item">
+    <div class="tp-icon">${w.icon}</div>
+    <div class="tp-text"><b>${w.title}</b><span>${w.text}</span></div>
+  </div>`).join('');
+
+// ---------- leader panels ----------
+function leaderPanel(id, arr, valFn){
+  document.getElementById(id).innerHTML = arr.slice(0,3).map((d,i)=>`
+    <div class="leader-row">
+      <div class="leader-rank">${i+1}</div>
+      <div class="leader-text"><b>${d.account}</b><span>${valFn(d)}</span></div>
+    </div>`).join('');
+}
+leaderPanel('topImpressions', byImprDesc, d=>`${d.impressions.toLocaleString()} impr &middot; ${d.clicks} clicks &middot; $${d.cpc_calc.toFixed(2)} CPC`);
+leaderPanel('bestCPC', byCPCasc, d=>`$${d.cpc_calc.toFixed(2)} CPC &middot; ${(d.ctr_calc*100).toFixed(2)}% CTR &middot; ${d.clicks} clicks`);
+</script>
+</body>
+</html>
